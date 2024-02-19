@@ -3,8 +3,14 @@
 :root {
     --font: #8DF4FF;
     --background: #024179;
-    --aberrarion: #0045AD;
+    --aberrarion: rgba(2, 89, 166, 1);
     --black: #333;
+
+    --screen-width: 1000px;
+    --screen-height: 750px;
+    --top-bot-height: 115px;
+    --divider-height: 10px;
+    --mid-height: 500px;
 }  
 
 html, body {
@@ -31,11 +37,11 @@ body {
 
 .screen {
     background: var(--background);
-    width: 1000px;
-    height: 750px;
+    width: var(--screen-width);
+    height: var(--screen-height);
 
     display: grid;
-    grid-template-rows: 115px 10px 500px 10px 115px;
+    grid-template-rows: var(--top-bot-height) var(--divider-height) var(--mid-height) var(--divider-height) var(--top-bot-height);
 }
 
     .screen .top {
@@ -55,17 +61,22 @@ body {
         }
 
     .screen .mid {
-        
+        width: var(--screen-width);
+        height: var(--mid-height);
+        overflow: hidden;
     }
 
         .screen .mid .digit-container {
+            position: relative;
+            top: 0px;
+            left: 0px;
             display: flex;
             flex-wrap: wrap;
         }
 
             .screen .mid .digit-container .digit {
                 display: inline-block;
-                text-shadow: 2px 3px 4px var(--aberrarion);
+                /* text-shadow: 2px 2px 2px var(--aberrarion); */
                 line-height: 0.9;
             }
 
