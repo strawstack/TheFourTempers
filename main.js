@@ -9,6 +9,7 @@ let tracker = {};
 
     // Variables
     let fSize = 1.5;
+    let zoomLevel = 0;
     let digitContainer_Offset_Target = {x: 0, y: 0};
     let digitContainer_Offset = {x: 0, y: 0};
     let activeAnim = {};
@@ -20,6 +21,14 @@ let tracker = {};
         'DOWN': {x: 0, y: 1},
         'LEFT': {x: -1, y: 0}
     };
+
+    const zoom_lookup = [
+        { cellSize: 40, fontSize: 0.75}, 
+        { cellSize: 55, fontSize: 1},
+        { cellSize: 70, fontSize: 1.25},
+        { cellSize: 85, fontSize: 1.5},
+        { cellSize: 100, fontSize: 1.75}
+    ];
 
     const uid = (() => {
         let id = -1;
@@ -66,16 +75,17 @@ let tracker = {};
         }
     };
 
-    function fontSize(rem) {
-        allDigits.forEach(e => {
-            e.style.fontSize = `${rem}rem`;
-        });
+    function setZoom(level) {
+        const { cellSize, fontSize } = zoom_lookup[level];
+        
+        // digit font size
+        document.body.style.setProperty("--digit-font-size", `${fontSize}rem`);
 
-        // Maintain 64 in a row
-        curDigitSize = allDigits[0].getBoundingClientRect();
-        const { width } = curDigitSize;
-        const pad = 0;
-        digitContainer.style.width = `${64 * width + pad}px`;
+        // 64 in a row
+        document.body.style.setProperty("--digit-container-size", `${64 * cellSize}px`);
+
+        // Cell size
+        document.body.style.setProperty("--digit-cell-size", `${cellSize}px`);
     }
 
     function add(a, b) {
@@ -96,14 +106,15 @@ let tracker = {};
     window.addEventListener("keydown", e => {
         const {key} = e;
         if (key === "ArrowUp") {
-            fSize += 0.25;
-            fSize = Math.min(8, fSize);
-            fontSize(fSize);
+            zoomLevel += 1;
+            zoomLevel = Math.min(4, zoomLevel);
+            setZoom(zoomLevel);
+
 
         } else if (key === "ArrowDown") {
-            fSize -= 0.25;
-            fSize = Math.max(1.5, fSize);
-            fontSize(fSize);
+            zoomLevel -= 1;
+            zoomLevel = Math.max(0, zoomLevel);
+            setZoom(zoomLevel);
 
         } else if ("wasd".indexOf(key) !== -1) {
             const wasd_lookup = {

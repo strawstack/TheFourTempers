@@ -11,6 +11,12 @@
     --top-bot-height: 115px;
     --divider-height: 10px;
     --mid-height: 500px;
+
+    --body-font-size: 1.5rem;
+
+    --digit-font-size: 1.5rem;
+    --digit-cell-size: 48px;
+    --digit-container-size: 3072px;
 }  
 
 html, body {
@@ -23,7 +29,7 @@ body {
     font-family: "M PLUS Rounded 1c", sans-serif;
     font-style: normal;
     font-weight: 800; /* 400 for regular */ 
-    font-size: 1.5rem; /* 1.5rem - 8rem */
+    font-size: var(--body-font-size); /* 1.5rem - 8rem */
     color: var(--font);
 }
 
@@ -72,12 +78,16 @@ body {
             left: 0px;
             display: flex;
             flex-wrap: wrap;
+            width: var(--digit-container-size);
         }
 
             .screen .mid .digit-container .digit {
                 display: inline-block;
                 /* text-shadow: 2px 2px 2px var(--aberrarion); */
                 line-height: 0.9;
+                width: var(--digit-cell-size);
+                height: var(--digit-cell-size);
+                font-size: var(--digit-font-size);
             }
 
     .screen .bot {
