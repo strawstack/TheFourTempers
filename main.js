@@ -8,18 +8,38 @@ let tracker = {};
     let curDigitSize = {width: null, height: null};
 
     // Variables
-    let fSize = 1.5;
-    let zoomLevel = 0;
-    let digitContainer_Offset_Target = {x: 0, y: 0};
-    let digitContainer_Offset = {x: 0, y: 0};
-    let activeAnim = {};
+    let zoomLevel = 2;
+    let curVelocity = {x: 0, y: 0};
+    const digitContainerOffset = {x: 0, y: 0};
+    const isKeyDown = {
+        w: false,
+        a: false,
+        s: false,
+        d: false
+    };
 
     // Constants
+    const COLS = 64;
+    const ROWS = 20;
+    
+    const SPEED = 5;
+    const FRICTION = 0.9;
+    const SMALL = 0.1;
+
+    const MID_HEIGHT = 500;
+    const SCREEN_WIDTH = 1000;
+    
     const dir = {
-        'UP': {x: 0, y: -1},
-        'RIGHT': {x: 1, y: 0},
-        'DOWN': {x: 0, y: 1},
-        'LEFT': {x: -1, y: 0}
+        UP: {x: 0, y: -1},
+        RIGHT: {x: 1, y: 0},
+        DOWN: {x: 0, y: 1},
+        LEFT: {x: -1, y: 0}
+    };
+    const dir_lookup = {
+        w: 'UP',
+        d: 'RIGHT',
+        s: 'DOWN',
+        a: 'LEFT'
     };
 
     const zoom_lookup = [
@@ -48,16 +68,43 @@ let tracker = {};
     
     function render(timestamp) {
         
-        for (let key in activeAnim) {
-            const {from, to, start, end} = activeAnim[key];
-
+        for (let key in isKeyDown) {
+            const isDown = isKeyDown[key];
+            if (isDown) {
+                const {x, y} = dir[dir_lookup[key]];
+                curVelocity.x = -1 * x * SPEED;
+                curVelocity.y = -1 * y * SPEED;
+                break;
+            }
         }
 
+        // Apply friction
+        curVelocity.x *= FRICTION;
+        curVelocity.y *= FRICTION;
+        if (Math.abs(curVelocity.x) <= SMALL) curVelocity.x = 0;
+        if (Math.abs(curVelocity.y) <= SMALL) curVelocity.y = 0;
+
+        // Track offset
+        digitContainerOffset.x += curVelocity.x;
+        digitContainerOffset.y += curVelocity.y;
+
+        // Bounds
+        const { cellSize } = zoom_lookup[zoomLevel];
+        digitContainerOffset.x = Math.min(-1 * cellSize/2, digitContainerOffset.x);
+        digitContainerOffset.y = Math.min(-1 * cellSize/2, digitContainerOffset.y);
+        digitContainerOffset.x = Math.max(-1 * COLS * cellSize + SCREEN_WIDTH, digitContainerOffset.x);
+        digitContainerOffset.y = Math.max(-1 * ROWS * cellSize + MID_HEIGHT, digitContainerOffset.y);
+
+        // Apply to dom
+        digitContainer.style.top = `${digitContainerOffset.y}px`;
+        digitContainer.style.left = `${digitContainerOffset.x}px`;
+
+        window.requestAnimationFrame(render);
     }
 
     function main() {
         
-        Array(64 * 40).fill(null).forEach(e => {
+        Array(COLS * ROWS).fill(null).forEach(e => {
             digitContainer.appendChild(
                 createDigit()
             );
@@ -82,7 +129,7 @@ let tracker = {};
         document.body.style.setProperty("--digit-font-size", `${fontSize}rem`);
 
         // 64 in a row
-        document.body.style.setProperty("--digit-container-size", `${64 * cellSize}px`);
+        document.body.style.setProperty("--digit-container-size", `${COLS * cellSize}px`);
 
         // Cell size
         document.body.style.setProperty("--digit-cell-size", `${cellSize}px`);
@@ -102,7 +149,6 @@ let tracker = {};
         };
     }
 
-    // debug font size
     window.addEventListener("keydown", e => {
         const {key} = e;
         if (key === "ArrowUp") {
@@ -117,25 +163,18 @@ let tracker = {};
             setZoom(zoomLevel);
 
         } else if ("wasd".indexOf(key) !== -1) {
-            const wasd_lookup = {
-                w: dir.UP,
-                d: dir.RIGHT,
-                s: dir.DOWN,
-                a: dir.LEFT
-            };
-            const {width, height} = curDigitSize;
-            const size_lookup = {
-                w: height,
-                d: width,
-                s: height,
-                a: width
-            };            
-            digitContainer_Offset_Target = add(
-                digitContainer_Offset_Target,
-                mult(wasd_lookup[key], size_lookup[key])
-            );
+            isKeyDown[key] = true;
+
         }
-    })
+    });
+
+    window.addEventListener("keyup", e => {
+        const {key} = e;
+        if ("wasd".indexOf(key) !== -1) {
+            isKeyDown[key] = false;
+
+        }
+    });
 
 })();
 

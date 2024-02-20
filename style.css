@@ -10,13 +10,13 @@
     --screen-height: 750px;
     --top-bot-height: 115px;
     --divider-height: 10px;
-    --mid-height: 500px;
+    --mid-height: 500px; /* sync with MID_HEIGHT in main js */
 
     --body-font-size: 1.5rem;
 
-    --digit-font-size: 1.5rem;
-    --digit-cell-size: 48px;
-    --digit-container-size: 3072px;
+    --digit-font-size: 1.25rem; /* sync with zoomLevel in main js */
+    --digit-cell-size: 70px; /* sync with zoomLevel in main js */
+    --digit-container-size: 4480px; /* sync with zoomLevel in main js */
 }  
 
 html, body {
