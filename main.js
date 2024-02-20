@@ -4,6 +4,8 @@ let tracker = {};
     
     // Refs
     const digitContainer = document.querySelector(".digit-container");
+    const midRef = document.querySelector(".mid");
+    const screenRef = document.querySelector(".screen");
     let allDigits = null; // lazy init
     let curDigitSize = {width: null, height: null};
 
@@ -26,8 +28,10 @@ let tracker = {};
     const FRICTION = 0.9;
     const SMALL = 0.1;
 
+    const TOP_HEIGHT = 115;
     const MID_HEIGHT = 500;
     const SCREEN_WIDTH = 1000;
+    const DIVIDER_HEIGHT = 10;
     
     const dir = {
         UP: {x: 0, y: -1},
@@ -58,10 +62,11 @@ let tracker = {};
         };
     })();
 
-    function createDigit(n) {
-        if (n === undefined) n = Math.floor(Math.random() * 10);
+    function createDigit(key) {
+        const n = Math.floor(Math.random() * 10);
         const d = document.createElement("div");
         d.className = "digit";
+        d.dataset.key = key;
         d.innerHTML = n;
         return d;
     }
@@ -90,8 +95,8 @@ let tracker = {};
 
         // Bounds
         const { cellSize } = zoom_lookup[zoomLevel];
-        digitContainerOffset.x = Math.min(-1 * cellSize/2, digitContainerOffset.x);
-        digitContainerOffset.y = Math.min(-1 * cellSize/2, digitContainerOffset.y);
+        digitContainerOffset.x = Math.min(0, digitContainerOffset.x);
+        digitContainerOffset.y = Math.min(0, digitContainerOffset.y);
         digitContainerOffset.x = Math.max(-1 * COLS * cellSize + SCREEN_WIDTH, digitContainerOffset.x);
         digitContainerOffset.y = Math.max(-1 * ROWS * cellSize + MID_HEIGHT, digitContainerOffset.y);
 
@@ -102,15 +107,60 @@ let tracker = {};
         window.requestAnimationFrame(render);
     }
 
+    function getAdjecentDigits(allDigits, key) {
+        const adj = [
+            {x: -1, y: -1},
+            {x: 0, y: -1},
+            {x: 1, y: -1},
+
+            {x: -1, y: 0},
+            {x: 0, y: 0},
+            {x: 1, y: 0},
+
+            {x: -1, y: 1},
+            {x: 0, y: 1},
+            {x: 1, y: 1}
+        ];
+        const numberToCoord = n => {
+            return {
+                x: n % COLS,
+                y: Math.floor(n / COLS)
+            };
+        };
+        const coordToNumber = ({x, y}) => {
+            return y * COLS + x;
+        };
+        const bounds = ({x, y}, func) => {
+            if (x < 0 || x >= COLS || y < 0 || y >= ROWS) return null;
+            return func(); 
+        }
+        const coord = numberToCoord(key);
+        return adj.map(a => {
+            const tCoord = add(a, coord);
+            return bounds(tCoord, () => allDigits[coordToNumber(tCoord)]);
+        });
+    }
+
     function main() {
         
-        Array(COLS * ROWS).fill(null).forEach(e => {
+        Array(COLS * ROWS).fill(null).forEach((e, i) => {
             digitContainer.appendChild(
-                createDigit()
+                createDigit(i)
             );
         });
         allDigits = document.querySelectorAll(".digit");
         
+        allDigits.forEach(d => d.addEventListener("mousemove", e => {
+            const { target, clientX, clientY } = e;
+            const { left, top } = target.getBoundingClientRect();
+            const mouse = { // relative to digit
+                x: clientX - left,
+                y: clientY - top
+            };
+            const key = parseInt(target.dataset.key, 10);
+            const adj = getAdjecentDigits(allDigits, key);
+        }));
+
         window.requestAnimationFrame(render);
     }
 
@@ -175,6 +225,20 @@ let tracker = {};
 
         }
     });
+
+    /* mouse move on screen
+    screenRef.addEventListener("mousemove", e => {
+        const { clientX, clientY } = e; // position on screen (viewport coords)
+        const { left, top } = screenRef.getBoundingClientRect(); // screen offset in viewport 
+        const { x, y } = digitContainerOffset; // container offset
+
+        const mouse = { // mouse location relative to digitContainer
+            x: clientX - left - x,
+            y: clientY - top - y
+        };
+
+        console.log(mouse);
+    }); */
 
 })();
 

@@ -8,8 +8,8 @@
 
     --screen-width: 1000px;
     --screen-height: 750px;
-    --top-bot-height: 115px;
-    --divider-height: 10px;
+    --top-bot-height: 115px; /* sync with TOP_HEIGHT in main js */
+    --divider-height: 10px; /* sync with DIVIDER_HEIGHT in main js */
     --mid-height: 500px; /* sync with MID_HEIGHT in main js */
 
     --body-font-size: 1.5rem;
@@ -82,7 +82,9 @@ body {
         }
 
             .screen .mid .digit-container .digit {
-                display: inline-block;
+                display: flex;
+                justify-content: center;
+                align-items: center;
                 /* text-shadow: 2px 2px 2px var(--aberrarion); */
                 line-height: 0.9;
                 width: var(--digit-cell-size);
