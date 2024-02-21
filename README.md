@@ -11,3 +11,8 @@
     - Ex: create `baseFont` variable in js and, inside render, update the CSS variable 
 - [x] Implement min/max number of col/row as seen in the show
 - [x] Get document animated scrolling working with wasd 
+
+# Bugs
+
+- [ ] When mouse is static over numbers and digitContainer scrolls, mouse position does not update.
+    - Mouse should technically be considered as moving while digits scroll past it.

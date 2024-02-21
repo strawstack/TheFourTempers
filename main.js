@@ -15,11 +15,16 @@
         { cellSize: 85, fontSize: 1.5},
         { cellSize: 100, fontSize: 1.75}
     ];
+    state.magnification = {
+        adjDigits: null,
+        mouse: null
+    };
     // Constants
     state.COLS = 64;
     state.ROWS = 20;
     // Refs
     state.digitContainer = document.querySelector(".digit-container");
+    state.allDigits = null; // lazy init in main
         
     // Helper
     function createDigit(key) {
@@ -57,25 +62,12 @@
         const bounds = ({x, y}, func) => {
             if (x < 0 || x >= state.COLS || y < 0 || y >= state.ROWS) return null;
             return func(); 
-        }
+        };
         const coord = numberToCoord(key);
         return adj.map(a => {
             const tCoord = add(a, coord);
             return bounds(tCoord, () => allDigits[coordToNumber(tCoord)]);
         });
-    }
-
-    function setZoom(level) {
-        const { cellSize, fontSize } = state.zoom_lookup[level];
-        
-        // digit font size
-        document.body.style.setProperty("--digit-font-size", `${fontSize}rem`);
-
-        // 64 in a row
-        document.body.style.setProperty("--digit-container-size", `${state.COLS * cellSize}px`);
-
-        // Cell size
-        document.body.style.setProperty("--digit-cell-size", `${cellSize}px`);
     }
 
     function add(a, b) {
@@ -90,12 +82,10 @@
         if (key === "ArrowUp") {
             state.zoomLevel += 1;
             state.zoomLevel = Math.min(4, state.zoomLevel);
-            setZoom(state.zoomLevel);
 
         } else if (key === "ArrowDown") {
             state.zoomLevel -= 1;
             state.zoomLevel = Math.max(0, state.zoomLevel);
-            setZoom(state.zoomLevel);
 
         } else if ("wasd".indexOf(key) !== -1) {
             state.isKeyDown[key] = true;
@@ -119,16 +109,17 @@
             );
         });
 
-        const allDigits = document.querySelectorAll(".digit");
-        allDigits.forEach(d => d.addEventListener("mousemove", e => {
+        state.allDigits = document.querySelectorAll(".digit");
+        state.allDigits.forEach(d => d.addEventListener("mousemove", e => {
             const { target, clientX, clientY } = e;
             const { left, top } = target.getBoundingClientRect();
-            const mouse = { // relative to digit
+            const key = parseInt(target.dataset.key, 10);
+
+            state.magnification.mouse = { // relative to digit
                 x: clientX - left,
                 y: clientY - top
             };
-            const key = parseInt(target.dataset.key, 10);
-            const adj = getAdjecentDigits(allDigits, key);
+            state.magnification.adjDigits = getAdjecentDigits(state.allDigits, key);
         }));
 
         window.requestAnimationFrame(timestamp => calculate(timestamp, state));

@@ -21,10 +21,35 @@ function calculateFrame() {
         a: 'LEFT'
     };
 
+    function setZoom({ cellSize, fontSize }, COLS) {
+        
+        // digit font size
+        document.body.style.setProperty("--digit-font-size", `${fontSize}rem`);
+
+        // 64 in a row
+        document.body.style.setProperty("--digit-container-size", `${COLS * cellSize}px`);
+
+        // Cell size
+        document.body.style.setProperty("--digit-cell-size", `${cellSize}px`);
+    }
+
     function render(timestamp, state) {
 
         state.digitContainer.style.top = `${state.digitContainerPosition.y}px`;
         state.digitContainer.style.left = `${state.digitContainerPosition.x}px`;
+
+        setZoom(
+            state.zoom_lookup[state.zoomLevel], 
+            state.COLS
+        );
+
+        // Magnification
+        state.allDigits.forEach(e => e.style.removeProperty('font-size'));
+        if (state.magnification.adjDigits !== null) {
+            for (let digit of state.magnification.adjDigits) {
+                if (digit !== null) digit.style.fontSize = `3rem`;
+            }
+        }
 
     }
 
