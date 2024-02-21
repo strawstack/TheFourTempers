@@ -48,6 +48,8 @@ body {
 
     display: grid;
     grid-template-rows: var(--top-bot-height) var(--divider-height) var(--mid-height) var(--divider-height) var(--top-bot-height);
+
+    cursor: url('cursor.png'), pointer;
 }
 
     .screen .top {

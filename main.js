@@ -1,20 +1,22 @@
 (() => {
 
-    const { calculate } = calculateFrame();
+    const state = {};
+    const { calculate } = calculateFrame(state);
+    const { coordToNumber, calcMagnification } = helper(state);
 
     // State
-    const state = {};
     state.zoomLevel = 2;
     state.digitContainerPosition = {x: 0, y: 0};
     state.currentVelocity = {x: 0, y: 0};
     state.isKeyDown = { w: false, a: false, s: false, d: false };
     state.zoom_lookup = [
-        { cellSize: 40, fontSize: 0.75}, 
-        { cellSize: 55, fontSize: 1},
-        { cellSize: 70, fontSize: 1.25},
-        { cellSize: 85, fontSize: 1.5},
-        { cellSize: 100, fontSize: 1.75}
+        { cellSize: 40, fontSize: 0.75, range: [0.75, 3.75]}, 
+        { cellSize: 55, fontSize: 1, range: [1, 5]},
+        { cellSize: 70, fontSize: 1.25, range: [1.25, 5.25]},
+        { cellSize: 85, fontSize: 1.5, range: [1.5, 6.5]},
+        { cellSize: 100, fontSize: 1.75, range: [1.75, 6.75]}
     ];
+    state.mouse = null; // global mouse (cached for when container moves, but mouse is static)
     state.magnification = {
         adjDigits: null,
         mouse: null
@@ -36,47 +38,6 @@
         return d;
     }
     
-    function getAdjecentDigits(allDigits, key) {
-        const adj = [
-            {x: -1, y: -1},
-            {x: 0, y: -1},
-            {x: 1, y: -1},
-
-            {x: -1, y: 0},
-            {x: 0, y: 0},
-            {x: 1, y: 0},
-
-            {x: -1, y: 1},
-            {x: 0, y: 1},
-            {x: 1, y: 1}
-        ];
-        const numberToCoord = n => {
-            return {
-                x: n % state.COLS,
-                y: Math.floor(n / state.COLS)
-            };
-        };
-        const coordToNumber = ({x, y}) => {
-            return y * state.COLS + x;
-        };
-        const bounds = ({x, y}, func) => {
-            if (x < 0 || x >= state.COLS || y < 0 || y >= state.ROWS) return null;
-            return func(); 
-        };
-        const coord = numberToCoord(key);
-        return adj.map(a => {
-            const tCoord = add(a, coord);
-            return bounds(tCoord, () => allDigits[coordToNumber(tCoord)]);
-        });
-    }
-
-    function add(a, b) {
-        return {
-            x: a.x + b.x,
-            y: a.y + b.y
-        };
-    }
-
     window.addEventListener("keydown", e => {
         const {key} = e;
         if (key === "ArrowUp") {
@@ -110,19 +71,14 @@
         });
 
         state.allDigits = document.querySelectorAll(".digit");
-        state.allDigits.forEach(d => d.addEventListener("mousemove", e => {
-            const { target, clientX, clientY } = e;
-            const { left, top } = target.getBoundingClientRect();
-            const key = parseInt(target.dataset.key, 10);
+        
+        state.digitContainer.addEventListener("mousemove", e => {
+            const { clientX, clientY } = e;
+            state.mouse = { clientX, clientY };
+            calcMagnification({ clientX, clientY });
+        });
 
-            state.magnification.mouse = { // relative to digit
-                x: clientX - left,
-                y: clientY - top
-            };
-            state.magnification.adjDigits = getAdjecentDigits(state.allDigits, key);
-        }));
-
-        window.requestAnimationFrame(timestamp => calculate(timestamp, state));
+        window.requestAnimationFrame(calculate);
     }
 
     let once = false;

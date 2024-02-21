@@ -1,8 +1,15 @@
-function calculateFrame() {
+function calculateFrame(state) {
+
+    const { 
+        numberToCoord, 
+        mag, 
+        sub, 
+        calcMagnification 
+    } = helper(state);
 
     const SPEED = 5;
     const FRICTION = 0.9;
-    const SMALL = 0.1;
+    const SMALL = 0.01;
 
     const MID_HEIGHT = 500;
     const SCREEN_WIDTH = 1000;
@@ -33,7 +40,52 @@ function calculateFrame() {
         document.body.style.setProperty("--digit-cell-size", `${cellSize}px`);
     }
 
-    function render(timestamp, state) {
+    function valueFromRange(range, percent, base) {
+        if (percent <= 0) return base;
+        const [lower, upper] = range;
+        const size = upper - lower;
+        return lower + percent * size;
+    }
+
+    function setFontSize(allDigits, adjDigits) {
+        // Reset inline zoom for all digits
+        allDigits.forEach(e => e.style.removeProperty("font-size"));
+
+        // Apply font size to adjecent cells
+        if (adjDigits != null) {
+            adjDigits.forEach(digit => {
+                if (digit === null) return;
+
+                // Digit's key to coord in digit container
+                const { x, y } = numberToCoord(digit.dataset.key);
+                
+                // Current cell size
+                const { cellSize: SIZE, fontSize: base, range } = state.zoom_lookup[state.zoomLevel];
+
+                // Global center point of cell
+                const CENTER_POINT = {x: x * SIZE + SIZE/2, y: y * SIZE + SIZE/2};
+    
+                // Max distance possible from center
+                const MAX_DISTANCE = 3 * SIZE/2; // mag({x: , y: 3 * SIZE/2});
+    
+                // Vec from center to global mouse
+                const vec = sub(state.magnification.mouse, CENTER_POINT);
+    
+                // Magnitude of vector
+                const length = mag(vec);
+    
+                // Mouse proximity to center
+                const percent = 1 - (length / MAX_DISTANCE);
+    
+                const fontSize = valueFromRange(range, percent, base);
+                
+                digit.style.fontSize = `${fontSize}rem`;
+
+            });
+        }
+    }
+
+    function render(timestamp) {
 
         state.digitContainer.style.top = `${state.digitContainerPosition.y}px`;
         state.digitContainer.style.left = `${state.digitContainerPosition.x}px`;
@@ -44,16 +96,13 @@ function calculateFrame() {
         );
 
         // Magnification
-        state.allDigits.forEach(e => e.style.removeProperty('font-size'));
-        if (state.magnification.adjDigits !== null) {
-            for (let digit of state.magnification.adjDigits) {
-                if (digit !== null) digit.style.fontSize = `3rem`;
-            }
-        }
-
+        setFontSize(
+            state.allDigits,
+            state.magnification.adjDigits
+        );
     }
 
-    function calculate(timestamp, state) {
+    function calculate(timestamp) {
 
         // Set Velocity
         for (let key in state.isKeyDown) {
@@ -72,6 +121,8 @@ function calculateFrame() {
         if (Math.abs(state.currentVelocity.x) <= SMALL) state.currentVelocity.x = 0;
         if (Math.abs(state.currentVelocity.y) <= SMALL) state.currentVelocity.y = 0;
 
+        const savePosition = {...state.digitContainerPosition};
+
         // Track offset
         state.digitContainerPosition.x += state.currentVelocity.x;
         state.digitContainerPosition.y += state.currentVelocity.y;
@@ -83,8 +134,16 @@ function calculateFrame() {
         state.digitContainerPosition.x = Math.max(-1 * state.COLS * cellSize + SCREEN_WIDTH, state.digitContainerPosition.x);
         state.digitContainerPosition.y = Math.max(-1 * state.ROWS * cellSize + MID_HEIGHT, state.digitContainerPosition.y);
 
-        render(timestamp, state);
-        window.requestAnimationFrame(timestamp => calculate(timestamp, state));
+        // Possibly Trigger mouse position update
+        if (
+            state.mouse !== null && 
+            mag(sub(savePosition, state.digitContainerPosition)) >= SMALL
+        ) {
+            calcMagnification(state.mouse);
+        }
+
+        render(timestamp);
+        window.requestAnimationFrame(calculate);
     }
 
     return {
