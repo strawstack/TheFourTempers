@@ -2,10 +2,14 @@
 
 # Todo
 
-- [ ] Implement digit selection
-- [ ] Selected characters animate to roughly bin location on bin command
+- [ ] Implement bins visually
+- [ ] Implement bin open and close on number press
+- [ ] Implement: digits do not animate unless bin is open
+- [ ] Implement: bin stays open until numbers finish animating
 - [ ] Numbers animate and move
 
+- [x] Implement digit selection
+- [x] Selected characters animate to roughly bin location on bin command
 - [x] Make characters near cursor become larger
 - [x] Create state in js and have render syncs the DOM
     - Ex: create `baseFont` variable in js and, inside render, update the CSS variable
@@ -14,6 +18,7 @@
 
 # Bugs
 
+- [x] When view is scrolled down, numbers don't animate to correct bin location
 - [x] When mouse is static over numbers and digitContainer scrolls, mouse position does not update.
     - Mouse should technically be considered as moving while digits scroll past it.
 - [x] On low zooms, the magnified characters overlap
