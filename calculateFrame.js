@@ -119,7 +119,7 @@ function calculateFrame(state) {
 
         // Process animations
         for (let key in animations) {
-            const { from, to, action, interpolate, duration, start } = animations[key];
+            const { from, to, action, interpolate, duration, start, done } = animations[key];
             const elapsed = document.timeline.currentTime - start;
             if (elapsed >= duration) {
                 action(to);
