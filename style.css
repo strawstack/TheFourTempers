@@ -96,7 +96,24 @@ body {
             }
 
     .screen .bot {
-
+        display: grid;
+        grid-template-rows: 80px 35px;
     }
 
+        .screen .bot .bin-container {
+            display: grid;
+            grid-column-gap: 20px;
+            padding: 0px 20px;
+            grid-template-columns: repeat(5, 1fr);
+        }
+
+            .one, .two, .three, .four, .five {
+                display: flex;
+                flex-direction: column;
+                justify-content: space-around;
+            }
+
+                .number, .percent {
+
+                }
 
