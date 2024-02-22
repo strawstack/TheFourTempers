@@ -107,6 +107,29 @@ function calculateFrame(state) {
                 state.allDigits[key].style.fontSize = `${state.zoom_lookup[state.zoomLevel].range[UPPER]}rem`;
             }
         }
+
+        // Hide numbers if bin animation in progress
+        if (state.binAnimation) {
+            if (state.selected !== null) {
+                for (let key in state.selected) {
+                    state.allDigits[key].style.opacity = 0;
+                }
+            }
+        }
+
+        // Process animations
+        for (let key in animations) {
+            const { from, to, action, interpolate, duration, start } = animations[key];
+            const elapsed = document.timeline.currentTime - start;
+            if (elapsed >= duration) {
+                action(to);
+                done();
+                delete animations[key];
+            } else {
+                const percent = elapsed / duration;
+                action( interpolate(from, to, percent) );
+            }
+        }
     }
 
     function calculate(timestamp) {
