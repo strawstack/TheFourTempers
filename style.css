@@ -17,7 +17,7 @@
     --digit-font-size: 1.25rem; /* sync with zoomLevel in main js */
     --digit-cell-size: 70px; /* sync with zoomLevel in main js */
     --digit-container-size: 4480px; /* sync with zoomLevel in main js */
-}  
+}
 
 html, body {
     padding: 0px;
@@ -28,7 +28,7 @@ html, body {
 body {
     font-family: "M PLUS Rounded 1c", sans-serif;
     font-style: normal;
-    font-weight: 800; /* 400 for regular */ 
+    font-weight: 800; /* 400 for regular */
     font-size: var(--body-font-size); /* 1.5rem - 8rem */
     color: var(--font);
 }
@@ -81,6 +81,7 @@ body {
             display: flex;
             flex-wrap: wrap;
             width: var(--digit-container-size);
+            user-select: none;
         }
 
             .screen .mid .digit-container .digit {
@@ -95,7 +96,7 @@ body {
             }
 
     .screen .bot {
-        
+
     }
 
 

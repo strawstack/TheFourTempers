@@ -1,10 +1,11 @@
 function calculateFrame(state) {
 
-    const { 
-        numberToCoord, 
-        mag, 
-        sub, 
-        calcMagnification 
+    const {
+        numberToCoord,
+        mag,
+        sub,
+        calcMagnification,
+        selectDigit
     } = helper(state);
 
     const SPEED = 5;
@@ -29,7 +30,7 @@ function calculateFrame(state) {
     };
 
     function setZoom({ cellSize, fontSize }, COLS) {
-        
+
         // digit font size
         document.body.style.setProperty("--digit-font-size", `${fontSize}rem`);
 
@@ -47,9 +48,7 @@ function calculateFrame(state) {
         return lower + percent * size;
     }
 
-    function setFontSize(allDigits, adjDigits) {
-        // Reset inline zoom for all digits
-        allDigits.forEach(e => e.style.removeProperty("font-size"));
+    function setFontSize(adjDigits) {
 
         // Apply font size to adjecent cells
         if (adjDigits != null) {
@@ -58,27 +57,27 @@ function calculateFrame(state) {
 
                 // Digit's key to coord in digit container
                 const { x, y } = numberToCoord(digit.dataset.key);
-                
+
                 // Current cell size
                 const { cellSize: SIZE, fontSize: base, range } = state.zoom_lookup[state.zoomLevel];
 
                 // Global center point of cell
                 const CENTER_POINT = {x: x * SIZE + SIZE/2, y: y * SIZE + SIZE/2};
-    
+
                 // Max distance possible from center
                 const MAX_DISTANCE = 3 * SIZE/2; // mag({x: , y: 3 * SIZE/2});
-    
+
                 // Vec from center to global mouse
                 const vec = sub(state.magnification.mouse, CENTER_POINT);
-    
+
                 // Magnitude of vector
                 const length = mag(vec);
-    
+
                 // Mouse proximity to center
                 const percent = 1 - (length / MAX_DISTANCE);
-    
+
                 const fontSize = valueFromRange(range, percent, base);
-                
+
                 digit.style.fontSize = `${fontSize}rem`;
 
             });
@@ -91,15 +90,23 @@ function calculateFrame(state) {
         state.digitContainer.style.left = `${state.digitContainerPosition.x}px`;
 
         setZoom(
-            state.zoom_lookup[state.zoomLevel], 
+            state.zoom_lookup[state.zoomLevel],
             state.COLS
         );
 
+        // Reset inline zoom for all digits
+        state.allDigits.forEach(e => e.style.removeProperty("font-size"));
+
         // Magnification
-        setFontSize(
-            state.allDigits,
-            state.magnification.adjDigits
-        );
+        setFontSize(state.magnification.adjDigits);
+
+        // Set FontSize for Selected digits
+        const UPPER = 1;
+        if (state.selected !== null) {
+            for (let key in state.selected) {
+                state.allDigits[key].style.fontSize = `${state.zoom_lookup[state.zoomLevel].range[UPPER]}rem`;
+            }
+        }
     }
 
     function calculate(timestamp) {
@@ -136,10 +143,11 @@ function calculateFrame(state) {
 
         // Possibly Trigger mouse position update
         if (
-            state.mouse !== null && 
+            state.mouse !== null &&
             mag(sub(savePosition, state.digitContainerPosition)) >= SMALL
         ) {
             calcMagnification(state.mouse);
+            if (state.mouseDown) selectDigit(state.mouse);
         }
 
         render(timestamp);

@@ -51,7 +51,7 @@ function helper(state) {
         };
         const bounds = ({x, y}, func) => {
             if (x < 0 || x >= state.COLS || y < 0 || y >= state.ROWS) return null;
-            return func(); 
+            return func();
         };
         const coord = numberToCoord(key);
         return adj.map(a => {
@@ -67,14 +67,24 @@ function helper(state) {
         return coordToNumber({x: xx, y: yy});
     }
 
-    function calcMagnification({ clientX, clientY }) {
+    function mouseRelativeToDigitContainer({ clientX, clientY }) {
         const { left, top } = state.digitContainer.getBoundingClientRect();
-        state.magnification.mouse = {
+        return {
             x: clientX - left,
             y: clientY - top
         };
+    }
+
+    function calcMagnification({ clientX, clientY }) {
+        state.magnification.mouse = mouseRelativeToDigitContainer({ clientX, clientY });
         const key = keyFromMouse(state.magnification.mouse);
         state.magnification.adjDigits = getAdjecentDigits(state.allDigits, key);
+    }
+
+    function selectDigit(mouse) {
+        const key = keyFromMouse( mouseRelativeToDigitContainer(mouse) );
+        if (state.selected === null) state.selected = {};
+        state.selected[key] = true;
     }
 
     return {
@@ -82,6 +92,8 @@ function helper(state) {
         coordToNumber,
         mag,
         sub,
-        calcMagnification
+        calcMagnification,
+        mouseRelativeToDigitContainer,
+        selectDigit
     };
 }
