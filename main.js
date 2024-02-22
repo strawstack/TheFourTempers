@@ -119,8 +119,8 @@
                             y: floatFromPixels(clone.style.top)
                         },
                         to: {
-                            x: state.digitContainerPosition.x,
-                            y: state.digitContainerPosition.y + state.MID_HEIGHT + cellSize
+                            x: -1 * state.digitContainerPosition.x,
+                            y: -1 * state.digitContainerPosition.y + state.MID_HEIGHT + cellSize
                         },
                         action: ({x: left, y: top}) => { // modify state from animation value
                             clone.style.top = `${top}px`;
