@@ -1,5 +1,9 @@
 # TheFourTempers
 
+"I have identified 4 components, which I call 'tempers' from which are derived every human soul: Woe, Frolic, Dread Malice. Each man's character is defined by the precise ratio that resides in him. I walked into the cave of my own mind and there I tamed them. Should you tame the tempers, as I did mine, then the world shall become but your appendage. It is this great and consecrated power that I hope to pass on to all of you - my children." - Keir Eagan
+
+[Live Demo]()
+
 # Todo
 
 - [ ] Implement digit selection
