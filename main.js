@@ -28,16 +28,23 @@
     };
     state.mouseDown = false;
     state.selected = null;
-    state.binAnimation = false;
+    state.sendBinAnimation = false;
     // Constants
     state.COLS = 64;
     state.ROWS = 20;
+    state.TOP_BOT_HEIGHT = 115; // Note: Some of these could be auto-set in main from css variables
+    state.DIVIDER_HEIGHT = 10;
     state.MID_HEIGHT = 500;
-    state.BIN_GAP = 20; 
-    state.BIN_WIDTH = 176;
+    state.BIN_GAP_INNER = 20;
+    state.BIN_GAP_OUTER = 70;
+    state.BIN_WIDTH = 156;
+    state.CANVAS_WIDTH = 332;
+    state.CANVAS_HEIGHT = 92;
     // Refs
     state.digitContainer = document.querySelector(".digit-container");
     state.allDigits = null; // lazy init in main
+    state.canvasRef = document.querySelectorAll("canvas");
+    state.ctxRef = Array.from(state.canvasRef).map(c => c.getContext("2d"));
 
     // Helper
     function createDigit(key) {
@@ -51,7 +58,7 @@
 
     function sendBinAnimation(activeBin) {
         // Start binAnimation (freeze inputs)
-        state.binAnimation = true;
+        state.sendBinAnimation = true;
 
         // Wipe specified state
         state.currentVelocity = {x: 0, y: 0};
@@ -92,7 +99,7 @@
                     y: floatFromPixels(clone.style.top)
                 },
                 to: {
-                    x: -1 * state.digitContainerPosition.x + state.BIN_GAP + state.BIN_WIDTH/2 + (activeBin - 1) * (state.BIN_GAP + state.BIN_WIDTH) - cellSize/2,
+                    x: -1 * state.digitContainerPosition.x + state.BIN_GAP_OUTER + state.BIN_WIDTH/2 + (activeBin - 1) * (state.BIN_GAP_INNER + state.BIN_WIDTH) - cellSize/2,
                     y: -1 * state.digitContainerPosition.y + state.MID_HEIGHT + cellSize
                 },
                 action: ({x: left, y: top}) => { // modify state from animation value
@@ -111,7 +118,7 @@
                 },
                 duration: 1500,
                 done: () => {
-                    state.binAnimation = false; // after animation completes
+                    state.sendBinAnimation = false; // after animation completes
                     state.selected = null;
                 }
             });
@@ -135,8 +142,29 @@
 
         state.allDigits = document.querySelectorAll(".digit");
 
+        // Align canvases
+        state.canvasRef.forEach((canvas, i) => {
+            canvas.height = state.CANVAS_HEIGHT;
+            canvas.width = state.CANVAS_WIDTH;
+
+            const binGapAndBorder = 7;
+            const left = state.BIN_GAP_OUTER + i * (state.BIN_WIDTH + state.BIN_GAP_INNER) + state.BIN_WIDTH/2 - state.CANVAS_WIDTH/2;
+            const top  = state.TOP_BOT_HEIGHT + 2 * state.DIVIDER_HEIGHT + state.MID_HEIGHT + binGapAndBorder - state.CANVAS_HEIGHT;
+            canvas.style.left = `${left}px`;
+            canvas.style.top  = `${top}px`;
+            
+            const ctx = state.ctxRef[i];
+            ctx.fillStyle = "white";
+            ctx.fillRect(0, 0, state.CANVAS_WIDTH, state.CANVAS_HEIGHT);
+
+            // TODO - trigger animation right here, from 0 to 1
+            // And wipe, plus redraw the canvas each "frame"
+            // To effectively show the box opening
+
+        });
+
         window.addEventListener("keydown", e => {
-            if (state.binAnimation) return;
+            if (state.sendBinAnimation) return;
 
             const {key} = e;
             if (key === "ArrowUp") {
@@ -162,13 +190,14 @@
             } else if (key === "b") {
                 if (state.selected === null) return;
                 const activeBin = "12345".split("").find(n => state.isKeyDown[n]);
+                if (activeBin === undefined) return;
                 sendBinAnimation(parseInt(activeBin, 10));
 
             }
         });
 
         window.addEventListener("keyup", e => {
-            if (state.binAnimation) return;
+            if (state.sendBinAnimation) return;
             const {key} = e;
             if ("wasd12345".indexOf(key) !== -1) {
                 state.isKeyDown[key] = false;
@@ -177,19 +206,19 @@
         });
 
         state.digitContainer.addEventListener("mousedown", e => {
-            if (state.binAnimation) return;
+            if (state.sendBinAnimation) return;
             state.mouseDown = true;
             selectDigit(state.mouse);
         });
 
         window.addEventListener("mouseup", e => {
-            if (state.binAnimation) return;
+            if (state.sendBinAnimation) return;
             state.mouseDown = false;
             state.selected = null;
         });
 
         state.digitContainer.addEventListener("mousemove", e => {
-            if (state.binAnimation) return;
+            if (state.sendBinAnimation) return;
             const { clientX, clientY } = e;
             state.mouse = { clientX, clientY };
             calcMagnification({ clientX, clientY });

@@ -109,7 +109,7 @@ function calculateFrame(state) {
         }
 
         // Hide numbers if bin animation in progress
-        if (state.binAnimation) {
+        if (state.sendBinAnimation) {
             if (state.selected !== null) {
                 for (let key in state.selected) {
                     state.allDigits[key].style.opacity = 0;

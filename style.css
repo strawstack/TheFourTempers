@@ -17,6 +17,11 @@
     --digit-font-size: 1.25rem; /* sync with zoomLevel in main js */
     --digit-cell-size: 70px; /* sync with zoomLevel in main js */
     --digit-container-size: 4480px; /* sync with zoomLevel in main js */
+
+    --bin-width: 150px;
+    --bin-border: 3px;
+    --bin-outer-pad: 70px;
+    --bin-inner-pad: 20px;
 }
 
 html, body {
@@ -42,6 +47,7 @@ body {
 }
 
 .screen {
+    position: relative;
     background: var(--background);
     width: var(--screen-width);
     height: var(--screen-height);
@@ -102,8 +108,8 @@ body {
 
         .screen .bot .bin-container {
             display: grid;
-            grid-column-gap: 20px;
-            padding: 0px 20px;
+            grid-column-gap: var(--bin-inner-pad);
+            padding: 0px var(--bin-outer-pad);
             grid-template-columns: repeat(5, 1fr);
         }
 
@@ -128,9 +134,9 @@ body {
                     }
 
                 .label, .percent {
-                    width: 170px;
+                    width: var(--bin-width);
                     height: 28px;
-                    border: 3px solid var(--font);
+                    border: var(--bin-border) solid var(--font);
                     margin-top: 4px;
                 }
 
@@ -142,3 +148,10 @@ body {
             .location-container .thin-divider {
                 background: var(--font);
             }
+
+canvas {
+    position: absolute;
+    width: 332px;
+    height: 92px;
+    pointer-events: none;
+}
