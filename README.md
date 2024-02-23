@@ -24,7 +24,8 @@
 
 # Bugs
 
-- [x] When view is scrolled down, numbers don't animate to correct bin location
+- [ ] Bin sometimes closes or doesn't close after animation even if key is held or not.
+- [x] When view is scrolled down, numbers don't animate to correct bin location.
 - [x] When mouse is static over numbers and digitContainer scrolls, mouse position does not update.
     - Mouse should technically be considered as moving while digits scroll past it.
 - [x] On low zooms, the magnified characters overlap
