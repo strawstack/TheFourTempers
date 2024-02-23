@@ -1,4 +1,4 @@
-function calculateFrame(state) {
+function calculateFrame(state, animations) {
 
     const {
         numberToCoord,

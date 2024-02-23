@@ -1,5 +1,6 @@
-const animations = {};
 function animation() {
+
+    const animations = {};
 
     function animate(key, {from, to, action, interpolate, duration, done}) {
         if (interpolate === undefined) interpolate = (from, to, percent) => {
@@ -12,12 +13,13 @@ function animation() {
             action,
             interpolate,
             duration,
-            done,
+            done: (done === undefined) ? () => {} : done,
             start: document.timeline.currentTime
         };
     }
 
     return {
+        animations,
         animate
     };
 }

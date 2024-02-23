@@ -92,6 +92,7 @@ function helper(state) {
         coordToNumber,
         mag,
         sub,
+        add,
         calcMagnification,
         mouseRelativeToDigitContainer,
         selectDigit

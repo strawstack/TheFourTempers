@@ -1,15 +1,7 @@
 (() => {
 
+    // Init state
     const state = {};
-    const { calculate } = calculateFrame(state);
-    const {
-        sub,
-        calcMagnification,
-        selectDigit
-    } = helper(state);
-    const { animate } = animation();
-
-    // State
     state.zoomLevel = 2;
     state.digitContainerPosition = {x: 0, y: 0};
     state.currentVelocity = {x: 0, y: 0};
@@ -45,6 +37,16 @@
     state.allDigits = null; // lazy init in main
     state.canvasRef = document.querySelectorAll("canvas");
     state.ctxRef = Array.from(state.canvasRef).map(c => c.getContext("2d"));
+
+    // Imports
+    const { animate, animations } = animation();
+    const { calculate } = calculateFrame(state, animations);
+    const {
+        sub,
+        calcMagnification,
+        selectDigit
+    } = helper(state);
+    const { toggleBin } = binToggle(state, animate);
 
     // Helper
     function createDigit(key) {
@@ -128,10 +130,6 @@
 
     }
 
-    function binAnimation(number, willOpen) {
-
-    }
-
     function main() {
 
         Array(state.COLS * state.ROWS).fill(null).forEach((e, i) => {
@@ -152,15 +150,6 @@
             const top  = state.TOP_BOT_HEIGHT + 2 * state.DIVIDER_HEIGHT + state.MID_HEIGHT + binGapAndBorder - state.CANVAS_HEIGHT;
             canvas.style.left = `${left}px`;
             canvas.style.top  = `${top}px`;
-            
-            const ctx = state.ctxRef[i];
-            ctx.fillStyle = "white";
-            ctx.fillRect(0, 0, state.CANVAS_WIDTH, state.CANVAS_HEIGHT);
-
-            // TODO - trigger animation right here, from 0 to 1
-            // And wipe, plus redraw the canvas each "frame"
-            // To effectively show the box opening
-
         });
 
         window.addEventListener("keydown", e => {
@@ -184,9 +173,9 @@
                 // Only one bin at a time
                 if ("12345".split("").every(n => !state.isKeyDown[n])) {
                     state.isKeyDown[key] = true;
-                    binAnimation(key, true);
+                    toggleBin(parseInt(key, 10), true);
                 }
-                
+
             } else if (key === "b") {
                 if (state.selected === null) return;
                 const activeBin = "12345".split("").find(n => state.isKeyDown[n]);
@@ -199,9 +188,14 @@
         window.addEventListener("keyup", e => {
             if (state.sendBinAnimation) return;
             const {key} = e;
-            if ("wasd12345".indexOf(key) !== -1) {
+            if ("wasd".indexOf(key) !== -1) {
                 state.isKeyDown[key] = false;
-                binAnimation(key, false);
+
+            } else if ("12345".indexOf(key) !== -1) {
+                if (state.isKeyDown[key]) {
+                    state.isKeyDown[key] = false;
+                    toggleBin(parseInt(key, 10), false);
+                }
             }
         });
 
