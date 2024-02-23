@@ -135,7 +135,7 @@ function calculateFrame(state) {
     function calculate(timestamp) {
 
         // Set Velocity
-        for (let key in state.isKeyDown) {
+        for (let key of "wasd") {
             const isDown = state.isKeyDown[key];
             if (isDown) {
                 const {x, y} = dir[dir_lookup[key]];

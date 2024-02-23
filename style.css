@@ -110,10 +110,35 @@ body {
             .one, .two, .three, .four, .five {
                 display: flex;
                 flex-direction: column;
-                justify-content: space-around;
             }
 
-                .number, .percent {
-
+                .label {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
                 }
 
+                .percent {
+                    display: flex;
+                    align-items: center;
+                }
+
+                    .percent>span {
+                        margin-left: 6px;
+                    }
+
+                .label, .percent {
+                    width: 170px;
+                    height: 28px;
+                    border: 3px solid var(--font);
+                    margin-top: 4px;
+                }
+
+        .location-container {
+            display: grid;
+            grid-template-rows: 2px 1fr;
+        }
+
+            .location-container .thin-divider {
+                background: var(--font);
+            }
