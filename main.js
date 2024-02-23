@@ -46,7 +46,7 @@
         calcMagnification,
         selectDigit
     } = helper(state);
-    const { toggleBin } = binToggle(state, animate);
+    const { toggleBin } = binToggle(state, animate, animations);
 
     // Helper
     function createDigit(key) {
