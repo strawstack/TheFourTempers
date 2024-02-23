@@ -98,7 +98,7 @@ function calculateFrame(state, animations) {
         state.allDigits.forEach(e => e.style.removeProperty("font-size"));
 
         // Magnification
-        setFontSize(state.magnification.adjDigits);
+        if (!state.sendBinAnimation) setFontSize(state.magnification.adjDigits);
 
         // Set FontSize for Selected digits
         const UPPER = 1;
@@ -115,6 +115,13 @@ function calculateFrame(state, animations) {
                     state.allDigits[key].style.opacity = 0;
                 }
             }
+        }
+
+        // Hide mouse during send bin animation
+        if (state.sendBinAnimation) {
+            state.screen.style.cursor = "none";
+        } else {
+            state.screen.style.removeProperty("cursor");
         }
 
         // Process animations

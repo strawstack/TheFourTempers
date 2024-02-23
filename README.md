@@ -2,12 +2,18 @@
 
 # Todo
 
-- [ ] Implement bins visually
-- [ ] Implement bin open and close on number press
-- [ ] Implement: digits do not animate unless bin is open
-- [ ] Implement: bin stays open until numbers finish animating
-- [ ] Numbers animate and move
+- [ ] Implement precise animations
+    - Numbers get sent to bin
+    - Four tempers pop up 0.2s
+    - Numbers begin to fade back in (1s)
+    - Four tempers pop down 0.2s
+    - Bin closes (unless key is held)
+- [ ] Some numbers have behaviours
 
+- [x] Implement bins visually
+- [x] Implement bin open and close on number press
+- [x] Implement: digits do not animate unless bin is open
+- [x] Implement: bin stays open until numbers finish animating
 - [x] Implement digit selection
 - [x] Selected characters animate to roughly bin location on bin command
 - [x] Make characters near cursor become larger

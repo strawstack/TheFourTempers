@@ -21,6 +21,7 @@
     state.mouseDown = false;
     state.selected = null;
     state.sendBinAnimation = false;
+    state.sendBinKeyState = true; // State of active bin key during opening animation
     // Constants
     state.COLS = 64;
     state.ROWS = 20;
@@ -33,6 +34,7 @@
     state.CANVAS_WIDTH = 332;
     state.CANVAS_HEIGHT = 92;
     // Refs
+    state.screen = document.querySelector(".screen");
     state.digitContainer = document.querySelector(".digit-container");
     state.allDigits = null; // lazy init in main
     state.canvasRef = document.querySelectorAll("canvas");
@@ -64,11 +66,18 @@
 
         // Wipe specified state
         state.currentVelocity = {x: 0, y: 0};
-        state.isKeyDown = { w: false, a: false, s: false, d: false };
+        "wasd".split("").forEach(c => state.isKeyDown[c] = false);
         state.mouseDown = false;
 
         // Check correctness
-        const correct = true;
+        const isCorrect = () => {
+            // TODO - debug correctness implementation
+            return true;
+        };
+        const correct = isCorrect();
+
+        // Save selected digits to re-show later
+        const selectedDigits = Object.keys(state.selected).map(k => state.allDigits[k]);
 
         // Clone numbers
         const clones = [];
@@ -92,9 +101,12 @@
             return parseFloat(pxs.slice(0, pxs.length - 2));
         }
 
-        // Animate numbers
         const { cellSize } = state.zoom_lookup[state.zoomLevel];
-        clones.forEach(clone => {
+
+        // Animate numbers
+        // Note: here each clone fires an animation inside a promise
+        // so that I can await the completion of all animations.
+        const promiseClones = clones.map(clone => new Promise((res, rej) => {
             animate(clone.dataset.key, {
                 from: {
                     x: floatFromPixels(clone.style.left),
@@ -119,15 +131,40 @@
                     };
                 },
                 duration: 1500,
-                done: () => {
-                    state.sendBinAnimation = false; // after animation completes
-                    state.selected = null;
-                }
+                done: res
             });
+        }));
+
+        Promise.all(promiseClones).then(res => {
+
+            state.selected = null;
+            if (!state.sendBinKeyState) {
+                state.isKeyDown[activeBin] = false;
+                toggleBin(activeBin, false);
+            }
+
+            // Re-display numbers
+            const promiseSelectedDigits = selectedDigits.map(d => new Promise((res, rej) => {
+                animate(d.dataset.key, {
+                    from: 0,
+                    to: 1,
+                    action: n => {
+                        d.style.opacity = n;
+                    },
+                    duration: 1000,
+                    done: res
+                });
+            }));
+
+            Promise.all(promiseSelectedDigits).then(res => {
+
+                state.sendBinAnimation = false; // all animations complete
+
+                // Update mouse position
+                calcMagnification(state.mouse);
+            });
+
         });
-
-        // Replace numbers (if correct) or re-display existing numbers
-
     }
 
     function main() {
@@ -153,9 +190,20 @@
         });
 
         window.addEventListener("keydown", e => {
-            if (state.sendBinAnimation) return;
-
             const {key} = e;
+
+            if (state.sendBinAnimation) {
+                // Bin key was re-pressed during send bin animation
+                if ("12345".indexOf(key) !== -1) {
+                    // If this is the active key...
+                    if (state.isKeyDown[key]) {
+                        state.sendBinKeyState = true;
+
+                    }
+                }
+                return;
+            }
+
             if (key === "ArrowUp") {
                 if (state.mouseDown) return;
                 state.zoomLevel += 1;
@@ -186,15 +234,20 @@
         });
 
         window.addEventListener("keyup", e => {
-            if (state.sendBinAnimation) return;
             const {key} = e;
             if ("wasd".indexOf(key) !== -1) {
+                if (state.sendBinAnimation) return;
                 state.isKeyDown[key] = false;
 
             } else if ("12345".indexOf(key) !== -1) {
                 if (state.isKeyDown[key]) {
-                    state.isKeyDown[key] = false;
-                    toggleBin(parseInt(key, 10), false);
+                    if (state.sendBinAnimation) {
+                        state.sendBinKeyState = false;
+
+                    } else {
+                        state.isKeyDown[key] = false;
+                        toggleBin(parseInt(key, 10), false);
+                    }
                 }
             }
         });
@@ -212,9 +265,9 @@
         });
 
         state.digitContainer.addEventListener("mousemove", e => {
-            if (state.sendBinAnimation) return;
             const { clientX, clientY } = e;
             state.mouse = { clientX, clientY };
+            if (state.sendBinAnimation) return;
             calcMagnification({ clientX, clientY });
             if (state.mouseDown) selectDigit(state.mouse);
         });
