@@ -2,6 +2,22 @@
 
     // Init state
     const state = {};
+    // Constants
+    state.COLS = 64;
+    state.ROWS = 20;
+    state.TOP_BOT_HEIGHT = 115; // Note: Some of these could be auto-set in main from css variables
+    state.DIVIDER_HEIGHT = 10;
+    state.MID_HEIGHT = 500;
+    state.BIN_GAP_INNER = 20;
+    state.BIN_GAP_OUTER = 70;
+    state.BIN_WIDTH = 156;
+    state.CANVAS_WIDTH = 332;
+    state.CANVAS_HEIGHT = 92;
+    state.POPUP_WIDTH = 156;
+    state.POPUP_HEIGHT = 254;
+    state.BIN_GAP_AND_BORDER = 7;
+    // Calcualted Constants
+    state.POPUP_TOP_OFFSET = state.TOP_BOT_HEIGHT + 2 * state.DIVIDER_HEIGHT + state.MID_HEIGHT + state.BIN_GAP_AND_BORDER - state.POPUP_HEIGHT;
     state.zoomLevel = 2;
     state.digitContainerPosition = {x: 0, y: 0};
     state.currentVelocity = {x: 0, y: 0};
@@ -22,21 +38,19 @@
     state.selected = null;
     state.sendBinAnimation = false;
     state.sendBinKeyState = true; // State of active bin key during opening animation
-    // Constants
-    state.COLS = 64;
-    state.ROWS = 20;
-    state.TOP_BOT_HEIGHT = 115; // Note: Some of these could be auto-set in main from css variables
-    state.DIVIDER_HEIGHT = 10;
-    state.MID_HEIGHT = 500;
-    state.BIN_GAP_INNER = 20;
-    state.BIN_GAP_OUTER = 70;
-    state.BIN_WIDTH = 156;
-    state.CANVAS_WIDTH = 332;
-    state.CANVAS_HEIGHT = 92;
+    state.popupHeight = [
+        state.POPUP_TOP_OFFSET + state.POPUP_HEIGHT, // popups start in the down position 
+        state.POPUP_TOP_OFFSET + state.POPUP_HEIGHT,
+        state.POPUP_TOP_OFFSET + state.POPUP_HEIGHT,
+        state.POPUP_TOP_OFFSET + state.POPUP_HEIGHT,
+        state.POPUP_TOP_OFFSET + state.POPUP_HEIGHT
+    ];
+
     // Refs
     state.screen = document.querySelector(".screen");
     state.digitContainer = document.querySelector(".digit-container");
     state.allDigits = null; // lazy init in main
+    state.popupRef = document.querySelectorAll(".popup");
     state.canvasRef = document.querySelectorAll("canvas");
     state.ctxRef = Array.from(state.canvasRef).map(c => c.getContext("2d"));
 
@@ -60,15 +74,27 @@
         return d;
     }
 
-    function sendBinAnimation(activeBin) {
+    async function wait(ms) {
+        return new Promise((res, rej) => {
+            setTimeout(res, ms);
+        });
+    }
+
+    async function sendBinAnimation(activeBin) {
+
+        const activeBinNumber = parseInt(activeBin, 10); 
+
         // Start binAnimation (freeze inputs)
         state.sendBinAnimation = true;
 
+        // Save selected digits to re-show later
+        const selectedDigits = Object.keys(state.selected).map(k => state.allDigits[k]);
+
         // Wipe specified state
+        state.mouseDown = false;
         state.currentVelocity = {x: 0, y: 0};
         "wasd".split("").forEach(c => state.isKeyDown[c] = false);
-        state.mouseDown = false;
-
+        
         // Check correctness
         const isCorrect = () => {
             // TODO - debug correctness implementation
@@ -76,13 +102,9 @@
         };
         const correct = isCorrect();
 
-        // Save selected digits to re-show later
-        const selectedDigits = Object.keys(state.selected).map(k => state.allDigits[k]);
-
         // Clone numbers
         const clones = [];
-        for (let key in state.selected) {
-            const digit = state.allDigits[key];
+        for (let digit of selectedDigits) {
             const digitRect = digit.getBoundingClientRect();
             const containerRect = state.digitContainer.getBoundingClientRect();
             const { x: left, y: top } = sub(
@@ -106,8 +128,8 @@
         // Animate numbers
         // Note: here each clone fires an animation inside a promise
         // so that I can await the completion of all animations.
-        const promiseClones = clones.map(clone => new Promise((res, rej) => {
-            animate(clone.dataset.key, {
+        await Promise.all(clones.map(clone => {
+            return animate(clone.dataset.key, {
                 from: {
                     x: floatFromPixels(clone.style.left),
                     y: floatFromPixels(clone.style.top)
@@ -130,41 +152,61 @@
                         y: fy + percent * intervalY,
                     };
                 },
-                duration: 1500,
-                done: res
+                duration: 1500
             });
         }));
 
-        Promise.all(promiseClones).then(res => {
+        // Wipe selection
+        state.selected = null;
 
-            state.selected = null;
-            if (!state.sendBinKeyState) {
-                state.isKeyDown[activeBin] = false;
-                toggleBin(activeBin, false);
-            }
+        await wait(500);
 
-            // Re-display numbers
-            const promiseSelectedDigits = selectedDigits.map(d => new Promise((res, rej) => {
-                animate(d.dataset.key, {
-                    from: 0,
-                    to: 1,
-                    action: n => {
-                        d.style.opacity = n;
-                    },
-                    duration: 1000,
-                    done: res
-                });
-            }));
-
-            Promise.all(promiseSelectedDigits).then(res => {
-
-                state.sendBinAnimation = false; // all animations complete
-
-                // Update mouse position
-                calcMagnification(state.mouse);
-            });
-
+        // Pop dialogue
+        await animate("dialogue", {
+            from: state.POPUP_TOP_OFFSET + state.POPUP_HEIGHT,
+            to: state.POPUP_TOP_OFFSET,
+            action: n => {
+                state.popupHeight[activeBinNumber - 1] = n;
+            },
+            duration: 500
         });
+
+        await wait(1000);
+
+        // Re-display numbers
+        selectedDigits.map(d => {
+            return animate(d.dataset.key, {
+                from: 0,
+                to: 1,
+                action: n => {
+                    d.style.opacity = n;
+                },
+                duration: 1000
+            });
+        });
+
+        // Close dialogue
+        await animate("dialogue", {
+            from: state.POPUP_TOP_OFFSET,
+            to: state.POPUP_TOP_OFFSET + state.POPUP_HEIGHT,
+            action: n => {
+                state.popupHeight[activeBinNumber - 1] = n;
+            },
+            duration: 500
+        });
+
+        state.sendBinAnimation = false; // all animations complete
+
+        // Update mouse position
+        calcMagnification(state.mouse);
+ 
+        await wait(500);
+
+        // close bin
+        if (!state.sendBinKeyState) {
+            state.isKeyDown[activeBin] = false;
+            toggleBin(activeBin, false);
+        }
     }
 
     function main() {
@@ -181,12 +223,18 @@
         state.canvasRef.forEach((canvas, i) => {
             canvas.height = state.CANVAS_HEIGHT;
             canvas.width = state.CANVAS_WIDTH;
-
-            const binGapAndBorder = 7;
             const left = state.BIN_GAP_OUTER + i * (state.BIN_WIDTH + state.BIN_GAP_INNER) + state.BIN_WIDTH/2 - state.CANVAS_WIDTH/2;
-            const top  = state.TOP_BOT_HEIGHT + 2 * state.DIVIDER_HEIGHT + state.MID_HEIGHT + binGapAndBorder - state.CANVAS_HEIGHT;
+            const top  = state.TOP_BOT_HEIGHT + 2 * state.DIVIDER_HEIGHT + state.MID_HEIGHT + state.BIN_GAP_AND_BORDER - state.CANVAS_HEIGHT;
             canvas.style.left = `${left}px`;
             canvas.style.top  = `${top}px`;
+        });
+
+        // Align popup
+        state.popupRef.forEach((popup, i) => {
+            const left = state.BIN_GAP_OUTER + i * (state.BIN_WIDTH + state.BIN_GAP_INNER) + state.BIN_WIDTH/2 - state.POPUP_WIDTH/2;
+            const top = state.POPUP_TOP_OFFSET + state.POPUP_HEIGHT;
+            popup.style.left = `${left}px`;
+            popup.style.top  = `${top}px`;
         });
 
         window.addEventListener("keydown", e => {

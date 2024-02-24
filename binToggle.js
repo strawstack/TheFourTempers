@@ -99,9 +99,9 @@ function binToggle(state, animate, animations) {
     }
 
     function toggleBin(number, willOpen) {
-
+        
         const tiltDuration = 200;
-        const rotateDuration = 1000;
+        const rotateDuration = 600;
         const ctx = state.ctxRef[number - 1];
 
         const calculate = () => {

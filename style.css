@@ -48,6 +48,7 @@ body {
 
 .screen {
     position: relative;
+    overflow: hidden;
     background: var(--background);
     width: var(--screen-width);
     height: var(--screen-height);
@@ -111,6 +112,10 @@ body {
             grid-column-gap: var(--bin-inner-pad);
             padding: 0px var(--bin-outer-pad);
             grid-template-columns: repeat(5, 1fr);
+            position: relative;
+            z-index: 10;
+            background: var(--background);
+            margin-top: 4px;
         }
 
             .one, .two, .three, .four, .five {
@@ -127,6 +132,7 @@ body {
                 .percent {
                     display: flex;
                     align-items: center;
+                    margin-top: 4px;
                 }
 
                     .percent>span {
@@ -137,12 +143,14 @@ body {
                     width: var(--bin-width);
                     height: 28px;
                     border: var(--bin-border) solid var(--font);
-                    margin-top: 4px;
                 }
 
         .location-container {
             display: grid;
             grid-template-rows: 2px 1fr;
+            position: relative;
+            z-index: 10;
+            background: var(--background);
         }
 
             .location-container .thin-divider {
@@ -154,4 +162,15 @@ canvas {
     width: 332px;
     height: 92px;
     pointer-events: none;
+}
+
+.popup {
+    position: absolute;
+    z-index: 5;
+    width: 150px; /* bin width (before border) */
+    height: 248px;
+    border: 3px solid var(--font);
+    
+
+    background: grey;
 }

@@ -98,7 +98,7 @@ function calculateFrame(state, animations) {
         state.allDigits.forEach(e => e.style.removeProperty("font-size"));
 
         // Magnification
-        if (!state.sendBinAnimation) setFontSize(state.magnification.adjDigits);
+        setFontSize(state.magnification.adjDigits);
 
         // Set FontSize for Selected digits
         const UPPER = 1;
@@ -124,13 +124,18 @@ function calculateFrame(state, animations) {
             state.screen.style.removeProperty("cursor");
         }
 
+        // Set dialogue height
+        state.popupRef.forEach((popup, i) => {
+            popup.style.top = `${state.popupHeight[i]}px`;
+        });
+
         // Process animations
         for (let key in animations) {
-            const { from, to, action, interpolate, duration, start, done } = animations[key];
+            const { from, to, action, interpolate, duration, start, resolve } = animations[key];
             const elapsed = document.timeline.currentTime - start;
             if (elapsed >= duration) {
                 action(to);
-                done();
+                resolve();
                 delete animations[key];
             } else {
                 const percent = elapsed / duration;
