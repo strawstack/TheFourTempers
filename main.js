@@ -115,6 +115,7 @@
             cloneDigit.style.position = 'absolute';
             cloneDigit.style.top = `${top}px`;
             cloneDigit.style.left = `${left}px`;
+            cloneDigit.style.zIndex = `5`;
             state.digitContainer.appendChild(cloneDigit);
             clones.push(cloneDigit);
         }
@@ -155,6 +156,8 @@
                 duration: 1500
             });
         }));
+
+        clones.forEach(e => e.remove());
 
         // Wipe selection
         state.selected = null;

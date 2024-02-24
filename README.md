@@ -2,14 +2,14 @@
 
 # Todo
 
-- [ ] Implement precise animations
+- [ ] Some numbers have behaviours
+
+- [x] Implement precise animations
     - Numbers get sent to bin
     - Four tempers pop up 0.2s
     - Numbers begin to fade back in (1s)
     - Four tempers pop down 0.2s
     - Bin closes (unless key is held)
-- [ ] Some numbers have behaviours
-
 - [x] Implement bins visually
 - [x] Implement bin open and close on number press
 - [x] Implement: digits do not animate unless bin is open
@@ -24,7 +24,9 @@
 
 # Bugs
 
-- [ ] Bin sometimes closes or doesn't close after animation even if key is held or not.
+- [ ] Number could animate visually into the box if they were children of `screen` instead of `digitContainer`
+    - But the math for their position will have to be reworked for this to happen
+- [ ] Bin sometimes closes after number fade-in even if bin open key is still held.
 - [x] When view is scrolled down, numbers don't animate to correct bin location.
 - [x] When mouse is static over numbers and digitContainer scrolls, mouse position does not update.
     - Mouse should technically be considered as moving while digits scroll past it.
