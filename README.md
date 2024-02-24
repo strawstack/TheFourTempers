@@ -25,7 +25,8 @@
 # Bugs
 
 - [ ] Number could animate visually into the box if they were children of `screen` instead of `digitContainer`
-    - But the math for their position will have to be reworked for this to happen
+    - But the math for their position will have to be reworked for this to happen.
+    - Fix: The height of the top_bot_section needs to be subtracted from the digitContainer top offset .
 - [ ] Bin sometimes closes after number fade-in even if bin open key is still held.
 - [x] When view is scrolled down, numbers don't animate to correct bin location.
 - [x] When mouse is static over numbers and digitContainer scrolls, mouse position does not update.
