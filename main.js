@@ -59,6 +59,7 @@
     const { calculate } = calculateFrame(state, animations);
     const {
         sub,
+        mag,
         calcMagnification,
         selectDigit
     } = helper(state);
@@ -152,12 +153,17 @@
                     const { x: tx, y: ty } = to;
                     const intervalX = tx - fx;
                     const intervalY = ty - fy;
+
+                    function easeOutQuart(p, delta) {
+                        return delta * (1 - Math.pow(1 - p, 4));   
+                    }
+
                     return {
-                        x: fx + Math.min(1, 1.3 * percent) * intervalX,
+                        x: fx + easeOutQuart(percent, intervalX),
                         y: fy + percent * intervalY,
                     };
                 },
-                duration: 1500
+                duration: mag(sub({x: toX, y: toY}, {x: fromX, y: fromY})) / 240 * 1000 // px per sec
             });
         }));
 

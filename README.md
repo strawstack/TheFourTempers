@@ -2,9 +2,9 @@
 
 # Todo
 
-- [ ] When numbers animate, have them quickly move across the x-axis, and move at a constant rate in the y direction.
-- [ ] Some numbers have behaviours
+- [ ] Some numbers have behaviours (see below for details)
 
+- [x] When numbers animate, have them quickly move across the x-axis, and move at a constant rate in the y direction.
 - [x] Implement precise animations
     - Numbers get sent to bin
     - Four tempers pop up 0.2s
