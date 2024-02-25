@@ -18,6 +18,7 @@
     state.BIN_GAP_AND_BORDER = 7;
     // Calcualted Constants
     state.POPUP_TOP_OFFSET = state.TOP_BOT_HEIGHT + 2 * state.DIVIDER_HEIGHT + state.MID_HEIGHT + state.BIN_GAP_AND_BORDER - state.POPUP_HEIGHT;
+    // Variables
     state.zoomLevel = 1;
     state.digitContainerPosition = {x: 0, y: 0};
     state.currentVelocity = {x: 0, y: 0};
@@ -45,6 +46,8 @@
         state.POPUP_TOP_OFFSET + state.POPUP_HEIGHT,
         state.POPUP_TOP_OFFSET + state.POPUP_HEIGHT
     ];
+    state.groupSpans = null; // 2D rects to contain each behaviour group
+    state.getRandom = null; // lazy init
 
     // Refs
     state.screen = document.querySelector(".screen");
@@ -75,6 +78,15 @@
         d.appendChild(span);
         span.innerHTML = n;
         return d;
+    }
+
+    function randomFactory(hash) {
+        let index = 0;
+        function getRandom() {
+            index = (index + 1) % hash.length;
+            return parseInt(hash[index], 16) / 15;
+        }
+        return getRandom;
     }
 
     async function wait(ms) {
@@ -251,6 +263,12 @@
             popup.style.left = `${left}px`;
             popup.style.top  = `${top}px`;
         });
+
+        // Calculate behaviour data
+        const hash = CryptoJS.SHA256("FileName").toString();
+        state.getRandom = randomFactory(hash);
+        
+        // TODO - use getRandom to fill out groupSpans and other behaviour state
 
         window.addEventListener("keydown", e => {
             const {key} = e;
