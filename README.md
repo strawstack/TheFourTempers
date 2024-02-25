@@ -2,6 +2,7 @@
 
 # Todo
 
+- [ ] When numbers animate, have them quickly move across the x-axis, and move at a constant rate in the y direction.
 - [ ] Some numbers have behaviours
 
 - [x] Implement precise animations
@@ -47,9 +48,25 @@
 - Numbers get replaced with "normal" numbers, or fail silently and re-show original numbers
 - Find and bin all numbers with behaviours to complete the file
 
+# Terminal
+
+As seen, one must enter a file name for the file they are "working on". Hash file name and procedurally generate the file.
+Save file progress into local storage, and save previous file names for access by pressing up in the terminal.
+Consider using an actual terminal, so player could “hack” into lumon by inspecting other files in the drive. 
+For example, cell c could exit the macrodatarefinement app and enter a plain file system  
+
+# Rolodex
+
+Fake files with names A to Z. Scroll by in the Rolodex to fake find the one you entered.
+
+# Generating Numbers with Behaviours
+
+There are six numbers to find they drift to the sides periodically and wiggle. Some drift but don’t wiggle; they are false flags. Find them and group them with the ones that are moving near them. 
+Value of the most common number frequency in the group indicates the bin number. There are two sets for each bin in each file. If most common number ties then pick lower numbered bin.
+
 # How to Bin
 
 - Hold number key to open bin, bins close automatically if number is not held.
 - Press "b" to send numbers to bin.
-- Numbers will fail to send if bin is not open when "b" is pressed.
+- Numbers will fail to send (not animate) if bin is not open when "b" is pressed.
 - Bin will stay open for duration of binning and only close after numbers enter or number key is released.

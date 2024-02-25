@@ -106,17 +106,17 @@
         const clones = [];
         for (let digit of selectedDigits) {
             const digitRect = digit.getBoundingClientRect();
-            const containerRect = state.digitContainer.getBoundingClientRect();
+            const screenRect = state.screen.getBoundingClientRect();
             const { x: left, y: top } = sub(
                 {x: digitRect.left, y: digitRect.top},
-                {x: containerRect.left, y: containerRect.top}
+                {x: screenRect.left, y: screenRect.top}
             );
             const cloneDigit = digit.cloneNode(true);
             cloneDigit.style.position = 'absolute';
             cloneDigit.style.top = `${top}px`;
             cloneDigit.style.left = `${left}px`;
             cloneDigit.style.zIndex = `5`;
-            state.digitContainer.appendChild(cloneDigit);
+            state.screen.appendChild(cloneDigit);
             clones.push(cloneDigit);
         }
 
@@ -127,17 +127,21 @@
         const { cellSize } = state.zoom_lookup[state.zoomLevel];
 
         // Animate numbers
-        // Note: here each clone fires an animation inside a promise
-        // so that I can await the completion of all animations.
         await Promise.all(clones.map(clone => {
+
+            const fromX = floatFromPixels(clone.style.left);
+            const fromY = floatFromPixels(clone.style.top);
+            const toX = state.BIN_GAP_OUTER + state.BIN_WIDTH/2 + (activeBin - 1) * (state.BIN_GAP_INNER + state.BIN_WIDTH) - cellSize/2;
+            const toY = state.TOP_BOT_HEIGHT + state.DIVIDER_HEIGHT + state.MID_HEIGHT + cellSize;
+            
             return animate(clone.dataset.key, {
                 from: {
-                    x: floatFromPixels(clone.style.left),
-                    y: floatFromPixels(clone.style.top)
+                    x: fromX,
+                    y: fromY
                 },
                 to: {
-                    x: -1 * state.digitContainerPosition.x + state.BIN_GAP_OUTER + state.BIN_WIDTH/2 + (activeBin - 1) * (state.BIN_GAP_INNER + state.BIN_WIDTH) - cellSize/2,
-                    y: -1 * state.digitContainerPosition.y + state.MID_HEIGHT + cellSize
+                    x: toX,
+                    y: toY
                 },
                 action: ({x: left, y: top}) => { // modify state from animation value
                     clone.style.top = `${top}px`;
