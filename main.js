@@ -4,7 +4,7 @@
     const state = {};
     // Constants
     state.COLS = 40;
-    state.ROWS = 27;
+    state.ROWS = 25;
     state.TOP_BOT_HEIGHT = 115; // Note: Some of these could be auto-set in main from css variables
     state.DIVIDER_HEIGHT = 10;
     state.MID_HEIGHT = 500;
@@ -84,9 +84,33 @@
         let index = 0;
         function getRandom() {
             index = (index + 1) % hash.length;
-            return parseInt(hash[index], 16) / 15;
+            const index2 = (index + 2) % hash.length;
+            return parseInt(`${hash[index]}${hash[index2]}`, 16) / 256; // Returns [0 to 1) (precision 1/255)
         }
         return getRandom;
+    }
+
+    function distribute(amount, lst) {
+        const clst = [...lst];
+        let index = 0;
+        while (amount > 0) {
+            const value =  Math.min(amount, Math.floor(state.getRandom() * 5) + 1) // 1 to 5 (max current amount)
+            clst[index] += value;
+            amount -= value;
+            index = (index + 1) % clst.length;
+        }
+        return clst;
+    }
+
+    function prefixSum(lst) {
+        const clst = [...lst];
+        let total = 0;
+        for (let i = 0; i < clst.length; i++) {
+            const value = total;
+            total += clst[i];
+            clst[i] += value;
+        }
+        return clst;
     }
 
     async function wait(ms) {
@@ -268,7 +292,33 @@
         const hash = CryptoJS.SHA256("FileName").toString();
         state.getRandom = randomFactory(hash);
         
-        // TODO - use getRandom to fill out groupSpans and other behaviour state
+        // Fill out groupSpans and other behaviour state
+        const col_dividers = distribute(20, Array(3).fill(0));
+        const row_dividers = distribute(10, Array(2).fill(0));
+
+        function calcGroupsSpans(col_div, row_div) {
+            const SPAN_SIZE = 5;
+            let colPrefix = [0, ...prefixSum(col_div)];
+            let rowPrefix = [0, ...prefixSum(row_div)];
+            
+            const groupSpans = [];
+            Array(3).fill(null).forEach((e, yi) => {
+                const spans = [];
+                Array(4).fill(null).forEach((e, xi) => {
+                    spans.push({
+                        x: colPrefix[xi] + xi * SPAN_SIZE,
+                        y: rowPrefix[yi] + yi * SPAN_SIZE
+                    });
+                });
+                groupSpans.push(spans);
+            });
+            return groupSpans;
+        }
+
+        state.groupSpans = calcGroupsSpans(col_dividers, row_dividers);
+        
+        // TODO
+        console.log(state.groupSpans);
 
         window.addEventListener("keydown", e => {
             const {key} = e;
