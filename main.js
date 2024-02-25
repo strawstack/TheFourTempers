@@ -3,8 +3,8 @@
     // Init state
     const state = {};
     // Constants
-    state.COLS = 64;
-    state.ROWS = 20;
+    state.COLS = 40;
+    state.ROWS = 27;
     state.TOP_BOT_HEIGHT = 115; // Note: Some of these could be auto-set in main from css variables
     state.DIVIDER_HEIGHT = 10;
     state.MID_HEIGHT = 500;
@@ -18,7 +18,7 @@
     state.BIN_GAP_AND_BORDER = 7;
     // Calcualted Constants
     state.POPUP_TOP_OFFSET = state.TOP_BOT_HEIGHT + 2 * state.DIVIDER_HEIGHT + state.MID_HEIGHT + state.BIN_GAP_AND_BORDER - state.POPUP_HEIGHT;
-    state.zoomLevel = 2;
+    state.zoomLevel = 1;
     state.digitContainerPosition = {x: 0, y: 0};
     state.currentVelocity = {x: 0, y: 0};
     state.isKeyDown = { w: false, a: false, s: false, d: false, 1: false, 2: false, 3: false, 4: false, 5: false };
@@ -71,7 +71,9 @@
         const d = document.createElement("div");
         d.className = "digit";
         d.dataset.key = key;
-        d.innerHTML = n;
+        const span = document.createElement("span");
+        d.appendChild(span);
+        span.innerHTML = n;
         return d;
     }
 
@@ -135,7 +137,7 @@
             const toX = state.BIN_GAP_OUTER + state.BIN_WIDTH/2 + (activeBin - 1) * (state.BIN_GAP_INNER + state.BIN_WIDTH) - cellSize/2;
             const toY = state.TOP_BOT_HEIGHT + state.DIVIDER_HEIGHT + state.MID_HEIGHT + cellSize;
             
-            return animate(clone.dataset.key, {
+            return animate(`clone-${clone.dataset.key}`, {
                 from: {
                     x: fromX,
                     y: fromY

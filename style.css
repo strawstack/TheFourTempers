@@ -91,7 +91,8 @@ body {
             user-select: none;
         }
 
-            .screen .mid .digit-container .digit {
+            .screen .mid .digit-container .digit, .screen .digit { /* .screen .digit is a clone digit */
+                position: relative;
                 display: flex;
                 justify-content: center;
                 align-items: center;
@@ -101,6 +102,10 @@ body {
                 height: var(--digit-cell-size);
                 font-size: var(--digit-font-size);
             }
+
+                .screen .mid .digit-container .digit span {
+                    position: relative;
+                }
 
     .screen .bot {
         display: grid;

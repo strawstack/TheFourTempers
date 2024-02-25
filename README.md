@@ -3,6 +3,7 @@
 # Todo
 
 - [ ] Some numbers have behaviours (see below for details)
+- [ ] On start, numbers animate onto the screen randomly (opacity from 0 to 1)
 
 - [x] When numbers animate, have them quickly move across the x-axis, and move at a constant rate in the y direction.
 - [x] Implement precise animations
@@ -25,7 +26,7 @@
 
 # Bugs
 
-- [ ] Number could animate visually into the box if they were children of `screen` instead of `digitContainer`
+- [x] Number could animate visually into the box if they were children of `screen` instead of `digitContainer`
     - But the math for their position will have to be reworked for this to happen.
     - Fix: The height of the top_bot_section needs to be subtracted from the digitContainer top offset .
 - [ ] Bin sometimes closes after number fade-in even if bin open key is still held.
