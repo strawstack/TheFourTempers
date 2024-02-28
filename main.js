@@ -65,7 +65,7 @@
     const { calcMagnification, selectDigit } = help;
     const { toggleBin } = binToggle(state, animate, animations);
     const { sendBin } = sendBinAnimation(state, help, animate, toggleBin);
-    const { calcBehaviour } = behaviour(state);
+    const { calcBehaviour } = behaviour(state, help);
 
     // Helper
     function createDigit(key) {

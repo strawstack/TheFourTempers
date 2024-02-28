@@ -77,7 +77,7 @@ function binToggle(state, animate, animations) {
         ctx.lineTo(startPoints[RIGHT_TARGET].x, startPoints[RIGHT_TARGET].y);
         ctx.lineTo(startPoints[RIGHT_PIVOT].x, startPoints[RIGHT_PIVOT].y);
         ctx.lineTo(startPoints[LEFT_PIVOT].x, startPoints[LEFT_PIVOT].y);
-        ctx.moveTo(startPoints[LEFT_TARGET].x, startPoints[LEFT_TARGET].y);
+        ctx.lineTo(startPoints[LEFT_TARGET].x, startPoints[LEFT_TARGET].y);
         ctx.closePath();
         ctx.fill();
 

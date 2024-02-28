@@ -129,6 +129,13 @@ function calculateFrame(state, animations) {
             popup.style.top = `${state.popupHeight[i]}px`;
         });
 
+        // DEBUG: Make groups RED for debugging
+        if (state.groups !== null) {
+            state.groups.forEach(group => group.forEach(({ref}) => {
+                ref.style.color = 'lightsalmon';
+            }));
+        }
+
         // Process animations
         for (let key in animations) {
             const { from, to, action, interpolate, duration, start, resolve } = animations[key];

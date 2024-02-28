@@ -1,4 +1,4 @@
-function behaviour(state) {
+function behaviour(state, { coordToNumber }) {
 
     function randomFactory(hash) {
         let index = 0;
@@ -102,14 +102,20 @@ function behaviour(state) {
 
             const startRow = Math.floor(state.getRandom() * (SPAN_SIZE - numRows + 1));
 
-            const cube = Array(5).fill(null).map(e => Array(5).fill('O'));
+            const group = [];
             for (let r = startRow; r < startRow + numRows; r++) {
                 for (let c = rowOffsets[r]; c < rowOffsets[r] + rowLengths[r]; c++) {
-                    cube[r][c] = '#';
+                    const xx = x + c;
+                    const yy = y + r;
+                    group.push({
+                        x: xx,
+                        y: yy,
+                        ref: state.allDigits[coordToNumber({x: xx, y: yy})]
+                    });
                 }
             }
 
-            console.log(cube.map(row => row.join("")).join("\n"));
+            return group;
         }
 
         function calcGroups(spans) {
@@ -121,6 +127,7 @@ function behaviour(state) {
                     );
                 });
             });
+            return groups;
         }
 
         // Array of objects {main, digit_lookup}
@@ -129,7 +136,6 @@ function behaviour(state) {
         // that form a contigious blob inside a span
         state.groups = calcGroups(state.groupSpans);
 
-        
     }
 
     return {
