@@ -46,6 +46,7 @@
         state.POPUP_TOP_OFFSET + state.POPUP_HEIGHT,
         state.POPUP_TOP_OFFSET + state.POPUP_HEIGHT
     ];
+    state.groups = null;
     state.groupSpans = null; // 2D rects to contain each behaviour group
     state.getRandom = null; // lazy init
 
@@ -60,13 +61,11 @@
     // Imports
     const { animate, animations } = animation();
     const { calculate } = calculateFrame(state, animations);
-    const {
-        sub,
-        mag,
-        calcMagnification,
-        selectDigit
-    } = helper(state);
+    const help = helper(state);
+    const { calcMagnification, selectDigit } = help;
     const { toggleBin } = binToggle(state, animate, animations);
+    const { sendBin } = sendBinAnimation(state, help, animate, toggleBin);
+    const { calcBehaviour } = behaviour(state);
 
     // Helper
     function createDigit(key) {
@@ -78,186 +77,6 @@
         d.appendChild(span);
         span.innerHTML = n;
         return d;
-    }
-
-    function randomFactory(hash) {
-        let index = 0;
-        function getRandom() {
-            index = (index + 1) % hash.length;
-            const index2 = (index + 2) % hash.length;
-            return parseInt(`${hash[index]}${hash[index2]}`, 16) / 256; // Returns [0 to 1) (precision 1/255)
-        }
-        return getRandom;
-    }
-
-    function distribute(amount, lst) {
-        const clst = [...lst];
-        let index = 0;
-        while (amount > 0) {
-            const value =  Math.min(amount, Math.floor(state.getRandom() * 5) + 1) // 1 to 5 (max current amount)
-            clst[index] += value;
-            amount -= value;
-            index = (index + 1) % clst.length;
-        }
-        return clst;
-    }
-
-    function prefixSum(lst) {
-        const clst = [...lst];
-        let total = 0;
-        for (let i = 0; i < clst.length; i++) {
-            const value = total;
-            total += clst[i];
-            clst[i] += value;
-        }
-        return clst;
-    }
-
-    async function wait(ms) {
-        return new Promise((res, rej) => {
-            setTimeout(res, ms);
-        });
-    }
-
-    async function sendBinAnimation(activeBin) {
-
-        const activeBinNumber = parseInt(activeBin, 10); 
-
-        // Start binAnimation (freeze inputs)
-        state.sendBinAnimation = true;
-
-        // Save selected digits to re-show later
-        const selectedDigits = Object.keys(state.selected).map(k => state.allDigits[k]);
-
-        // Wipe specified state
-        state.mouseDown = false;
-        state.currentVelocity = {x: 0, y: 0};
-        "wasd".split("").forEach(c => state.isKeyDown[c] = false);
-        
-        // Check correctness
-        const isCorrect = () => {
-            // TODO - debug correctness implementation
-            return true;
-        };
-        const correct = isCorrect();
-
-        // Clone numbers
-        const clones = [];
-        for (let digit of selectedDigits) {
-            const digitRect = digit.getBoundingClientRect();
-            const screenRect = state.screen.getBoundingClientRect();
-            const { x: left, y: top } = sub(
-                {x: digitRect.left, y: digitRect.top},
-                {x: screenRect.left, y: screenRect.top}
-            );
-            const cloneDigit = digit.cloneNode(true);
-            cloneDigit.style.position = 'absolute';
-            cloneDigit.style.top = `${top}px`;
-            cloneDigit.style.left = `${left}px`;
-            cloneDigit.style.zIndex = `5`;
-            state.screen.appendChild(cloneDigit);
-            clones.push(cloneDigit);
-        }
-
-        function floatFromPixels(pxs) {
-            return parseFloat(pxs.slice(0, pxs.length - 2));
-        }
-
-        const { cellSize } = state.zoom_lookup[state.zoomLevel];
-
-        // Animate numbers
-        await Promise.all(clones.map(clone => {
-
-            const fromX = floatFromPixels(clone.style.left);
-            const fromY = floatFromPixels(clone.style.top);
-            const toX = state.BIN_GAP_OUTER + state.BIN_WIDTH/2 + (activeBin - 1) * (state.BIN_GAP_INNER + state.BIN_WIDTH) - cellSize/2;
-            const toY = state.TOP_BOT_HEIGHT + state.DIVIDER_HEIGHT + state.MID_HEIGHT + cellSize;
-            
-            return animate(`clone-${clone.dataset.key}`, {
-                from: {
-                    x: fromX,
-                    y: fromY
-                },
-                to: {
-                    x: toX,
-                    y: toY
-                },
-                action: ({x: left, y: top}) => { // modify state from animation value
-                    clone.style.top = `${top}px`;
-                    clone.style.left = `${left}px`;
-                },
-                interpolate: (from, to, percent) => { // interpolate between start and end values
-                    const { x: fx, y: fy } = from;
-                    const { x: tx, y: ty } = to;
-                    const intervalX = tx - fx;
-                    const intervalY = ty - fy;
-
-                    function easeOutQuart(p, delta) {
-                        return delta * (1 - Math.pow(1 - p, 4));   
-                    }
-
-                    return {
-                        x: fx + easeOutQuart(percent, intervalX),
-                        y: fy + percent * intervalY,
-                    };
-                },
-                duration: mag(sub({x: toX, y: toY}, {x: fromX, y: fromY})) / 240 * 1000 // px per sec
-            });
-        }));
-
-        clones.forEach(e => e.remove());
-
-        // Wipe selection
-        state.selected = null;
-
-        await wait(500);
-
-        // Pop dialogue
-        await animate("dialogue", {
-            from: state.POPUP_TOP_OFFSET + state.POPUP_HEIGHT,
-            to: state.POPUP_TOP_OFFSET,
-            action: n => {
-                state.popupHeight[activeBinNumber - 1] = n;
-            },
-            duration: 500
-        });
-
-        await wait(1000);
-
-        // Re-display numbers
-        selectedDigits.map(d => {
-            return animate(d.dataset.key, {
-                from: 0,
-                to: 1,
-                action: n => {
-                    d.style.opacity = n;
-                },
-                duration: 1000
-            });
-        });
-
-        // Close dialogue
-        await animate("dialogue", {
-            from: state.POPUP_TOP_OFFSET,
-            to: state.POPUP_TOP_OFFSET + state.POPUP_HEIGHT,
-            action: n => {
-                state.popupHeight[activeBinNumber - 1] = n;
-            },
-            duration: 500
-        });
-
-        state.sendBinAnimation = false; // all animations complete
-
-        // Update mouse position
-        calcMagnification(state.mouse);
- 
-        await wait(500);
-
-        // close bin
-        if (!state.sendBinKeyState) {
-            state.isKeyDown[activeBin] = false;
-            toggleBin(activeBin, false);
-        }
     }
 
     function main() {
@@ -288,37 +107,7 @@
             popup.style.top  = `${top}px`;
         });
 
-        // Calculate behaviour data
-        const hash = CryptoJS.SHA256("FileName").toString();
-        state.getRandom = randomFactory(hash);
-        
-        // Fill out groupSpans and other behaviour state
-        const col_dividers = distribute(20, Array(3).fill(0));
-        const row_dividers = distribute(10, Array(2).fill(0));
-
-        function calcGroupsSpans(col_div, row_div) {
-            const SPAN_SIZE = 5;
-            let colPrefix = [0, ...prefixSum(col_div)];
-            let rowPrefix = [0, ...prefixSum(row_div)];
-            
-            const groupSpans = [];
-            Array(3).fill(null).forEach((e, yi) => {
-                const spans = [];
-                Array(4).fill(null).forEach((e, xi) => {
-                    spans.push({
-                        x: colPrefix[xi] + xi * SPAN_SIZE,
-                        y: rowPrefix[yi] + yi * SPAN_SIZE
-                    });
-                });
-                groupSpans.push(spans);
-            });
-            return groupSpans;
-        }
-
-        state.groupSpans = calcGroupsSpans(col_dividers, row_dividers);
-        
-        // TODO
-        console.log(state.groupSpans);
+        calcBehaviour(state);
 
         window.addEventListener("keydown", e => {
             const {key} = e;
@@ -359,7 +148,7 @@
                 if (state.selected === null) return;
                 const activeBin = "12345".split("").find(n => state.isKeyDown[n]);
                 if (activeBin === undefined) return;
-                sendBinAnimation(parseInt(activeBin, 10));
+                sendBin(parseInt(activeBin, 10));
 
             }
         });
