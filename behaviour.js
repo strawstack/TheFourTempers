@@ -1,4 +1,4 @@
-function behaviour(state, { coordToNumber }) {
+function behaviour(state, { coordToNumber }, animate) {
 
     function randomFactory(hash) {
         let index = 0;
@@ -120,6 +120,24 @@ function behaviour(state, { coordToNumber }) {
 
             group.main = randBetween(0, group.digits.length);
 
+            const main = group.digits[group.main];
+            const { cellSize } = state.zoom_lookup[state.zoomLevel];
+            const { height, width } = main.ref.querySelector("span").getBoundingClientRect();
+
+            const maxTop = (cellSize - height)/2;
+            const maxLeft = (cellSize - width)/2;
+            
+            // Group main animation
+            animate(`main_${main.ref.dataset.key}`, {
+                from: 0,
+                to: maxLeft,
+                action: n => {
+                    console.log(main.ref.querySelector("span"))
+                    main.ref.querySelector("span").style.left = `${n}px`;
+                },
+                duration: 1000
+            });
+
             return group;
         }
 
@@ -135,7 +153,7 @@ function behaviour(state, { coordToNumber }) {
             return groups;
         }
 
-        // Array of objects {main, digit_lookup}
+        // Array of objects {main, digits}
         // main is {x, y} for the main digit of the group
         // digit lookup is an array of 3 to 5 rows of digits
         // that form a contigious blob inside a span
