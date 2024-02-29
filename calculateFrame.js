@@ -131,10 +131,18 @@ function calculateFrame(state, animations) {
 
         // DEBUG: Make groups RED for debugging
         if (state.groups !== null) {
-            state.groups.forEach(group => group.forEach(({ref}) => {
-                ref.style.color = 'lightsalmon';
-            }));
+            state.groups.forEach(group => {
+                group.digits.forEach(({ref}) => {
+                    ref.style.color = 'lightsalmon';
+                });
+                group.digits[group.main].ref.style.color = 'gold';
+            });
         }
+
+        // TODO: Animate group.main digits
+
+        // TODO: First frame in which group.main is only selected digit
+        // begin animating remainder of the group
 
         // Process animations
         for (let key in animations) {

@@ -102,18 +102,23 @@ function behaviour(state, { coordToNumber }) {
 
             const startRow = Math.floor(state.getRandom() * (SPAN_SIZE - numRows + 1));
 
-            const group = [];
+            const group = {
+                main: null,
+                digits: []
+            };
             for (let r = startRow; r < startRow + numRows; r++) {
                 for (let c = rowOffsets[r]; c < rowOffsets[r] + rowLengths[r]; c++) {
                     const xx = x + c;
                     const yy = y + r;
-                    group.push({
+                    group.digits.push({
                         x: xx,
                         y: yy,
                         ref: state.allDigits[coordToNumber({x: xx, y: yy})]
                     });
                 }
             }
+
+            group.main = randBetween(0, group.digits.length);
 
             return group;
         }
