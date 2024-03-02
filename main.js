@@ -46,9 +46,12 @@
         state.POPUP_TOP_OFFSET + state.POPUP_HEIGHT,
         state.POPUP_TOP_OFFSET + state.POPUP_HEIGHT
     ];
+    state.FILENAME = null;
+    state.getRandom = null;
     state.groups = null;
     state.groupSpans = null; // 2D rects to contain each behaviour group
     state.getRandom = null; // lazy init
+    state.digitOffset = null;
 
     // Refs
     state.screen = document.querySelector(".screen");
@@ -61,8 +64,10 @@
     // Imports
     const { animate, animations } = animation();
     const { calculate } = calculateFrame(state, animations);
+    
     const help = helper(state);
-    const { calcMagnification, selectDigit } = help;
+    const { calcMagnification, selectDigit, wait, randBetween } = help;
+
     const { toggleBin } = binToggle(state, animate, animations);
     const { sendBin } = sendBinAnimation(state, help, animate, toggleBin);
     const { calcBehaviour } = behaviour(state, help, animate);
@@ -79,8 +84,56 @@
         return d;
     }
 
+    function randomFactory(hash) {
+        let index = 0;
+        function getRandom() {
+            index = (index + 1) % hash.length;
+            const index2 = (index + 2) % hash.length;
+            return parseInt(`${hash[index]}${hash[index2]}`, 16) / 256; // Returns [0 to 1) (precision 1/255)
+        }
+        return getRandom;
+    }
+
+    async function animationChain(key) {
+        
+        // Wait for a time in the current location or...
+        if (state.getRandom() < 0.5) {
+
+            await wait(
+                randBetween(1000, 3000)
+            );
+
+        // ...move to a new location 
+        } else {
+            
+            const newPos = {
+                x: state.getRandom() * 2 - 1,
+                y: state.getRandom() * 2 - 1
+            };
+            const duration = randBetween(1000, 3000);
+            await animate(`base_${key}`, {
+                from: 0, 
+                to: duration,
+                action: n => {
+                    const percent = n/duration;
+                    state.digitOffset[key].left = percent * newPos.x;
+                    state.digitOffset[key].right = percent * newPos.y;
+                },  
+                duration
+            })
+
+        }
+
+        // Continue chain
+        animationChain(key);
+    }
+
     function main() {
 
+        state.FILENAME = "Filename";
+        const hash = Array(10).fill(null).map((e, i) => CryptoJS.SHA256(`${state.FILENAME}${i}`).toString()).join("");
+        state.getRandom = randomFactory(hash);
+        
         Array(state.COLS * state.ROWS).fill(null).forEach((e, i) => {
             state.digitContainer.appendChild(
                 createDigit(i)
@@ -108,6 +161,20 @@
         });
 
         calcBehaviour(state);
+
+        state.digitOffset = {};
+        state.allDigits.forEach(e => {
+            state.digitOffset[e.dataset.key] = {
+                key: e.dataset.key,
+                left: 0,
+                top: 0
+            };
+        });
+
+        state.allDigits.forEach(d => {
+            const { key } = d.dataset;
+            animationChain(key);
+        });
 
         window.addEventListener("keydown", e => {
             const {key} = e;

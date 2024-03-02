@@ -60,6 +60,12 @@ function helper(state) {
         });
     }
 
+    async function wait(ms) {
+        return new Promise((res, rej) => {
+            setTimeout(res, ms);
+        });
+    }
+
     function keyFromMouse({ x, y }) {
         const { cellSize } = state.zoom_lookup[state.zoomLevel];
         const xx = Math.floor(x / cellSize);
@@ -87,6 +93,10 @@ function helper(state) {
         state.selected[key] = true;
     }
 
+    function randBetween(a, b) { // [a, b) exclusive
+        return a + Math.floor(state.getRandom() * (b - a));
+    }
+
     return {
         numberToCoord,
         coordToNumber,
@@ -95,6 +105,8 @@ function helper(state) {
         add,
         calcMagnification,
         mouseRelativeToDigitContainer,
-        selectDigit
+        selectDigit,
+        wait,
+        randBetween
     };
 }

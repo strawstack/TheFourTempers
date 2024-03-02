@@ -1,10 +1,4 @@
-function sendBinAnimation(state, { sub, mag, calcMagnification }, animate, toggleBin) {
-
-    async function wait(ms) {
-        return new Promise((res, rej) => {
-            setTimeout(res, ms);
-        });
-    }
+function sendBinAnimation(state, { sub, mag, calcMagnification, wait }, animate, toggleBin) {
 
     async function sendBin(activeBin) {
 

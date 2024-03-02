@@ -1,14 +1,4 @@
-function behaviour(state, { coordToNumber }, animate) {
-
-    function randomFactory(hash) {
-        let index = 0;
-        function getRandom() {
-            index = (index + 1) % hash.length;
-            const index2 = (index + 2) % hash.length;
-            return parseInt(`${hash[index]}${hash[index2]}`, 16) / 256; // Returns [0 to 1) (precision 1/255)
-        }
-        return getRandom;
-    }
+function behaviour(state, { coordToNumber, randBetween }, animate) {
 
     function distribute(amount, lst) {
         const clst = [...lst];
@@ -33,17 +23,8 @@ function behaviour(state, { coordToNumber }, animate) {
         return clst;
     }
 
-    function randBetween(a, b) { // [a, b) exclusive
-        return a + Math.floor(state.getRandom() * (b - a));
-    }
-
     function calcBehaviour() {
         const SPAN_SIZE = 5;
-
-        // Calculate behaviour data
-        const FILENAME = "FileName"; 
-        const hash = Array(10).fill(null).map((e, i) => CryptoJS.SHA256(`${FILENAME}${i}`).toString()).join("");
-        state.getRandom = randomFactory(hash);
 
         // Fill out groupSpans and other behaviour state
         const col_dividers = distribute(20, Array(3).fill(0));
@@ -119,24 +100,6 @@ function behaviour(state, { coordToNumber }, animate) {
             }
 
             group.main = randBetween(0, group.digits.length);
-
-            const main = group.digits[group.main];
-            const { cellSize } = state.zoom_lookup[state.zoomLevel];
-            const { height, width } = main.ref.querySelector("span").getBoundingClientRect();
-
-            const maxTop = (cellSize - height)/2;
-            const maxLeft = (cellSize - width)/2;
-            
-            // Group main animation
-            animate(`main_${main.ref.dataset.key}`, {
-                from: 0,
-                to: maxLeft,
-                action: n => {
-                    console.log(main.ref.querySelector("span"))
-                    main.ref.querySelector("span").style.left = `${n}px`;
-                },
-                duration: 1000
-            });
 
             return group;
         }
