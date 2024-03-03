@@ -2,15 +2,19 @@
 
 # Todo
 
-- [ ] Some numbers have behaviours (see below for details)
+- [ ] Correct action should occur when numbers are sent to a bin.
+    - If correct, total the new file state.
+    - UI should reflect new file state.
+- [ ] On start, numbers animate onto the screen randomly (opacity from 0 to 1)
+    - View is frozen until all numbers are showing 
+
+- [x] Some numbers have behaviours (see below for details)
     - All digits have a base animation that is used to set their offset based on their current size (and cellsize).
     - These animations set a value in `state.digitOffset` which is used by render to adjust the position of numbers.
     - Special numbers have slightly different animations.
     - Selected numbers rely on their former position being saved to `state.digitOffset`.
     - When selected, aniamton is canceled, posiiton is saved, animation resumes when selection ends.
     - If numbers are sent to a bin, their position is reset when they re-appear.
-- [ ] On start, numbers animate onto the screen randomly (opacity from 0 to 1)
-
 - [x] When numbers animate, have them quickly move across the x-axis, and move at a constant rate in the y direction.
 - [x] Implement precise animations
     - Numbers get sent to bin
