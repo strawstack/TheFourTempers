@@ -254,7 +254,7 @@ function helper(state, animate, animations) {
         specialAnimationChain(key);
     }
 
-    function mostFreq(lst) {
+    function fz(lst) {
         let count = Array(10).fill(0);
         lst.forEach(e => count[parseInt(e, 10)] += 1);
         count = count.map((c, i) => [c, i]);
@@ -266,7 +266,7 @@ function helper(state, animate, animations) {
 
         const group = state.groups[index];
 
-        const counts = mostFreq(group.digits.map(d => state.allSpans[d.ref.dataset.key].innerHTML));
+        const counts = fz(group.digits.map(d => state.allSpans[d.ref.dataset.key].innerHTML));
 
         const existingBinCount = counts.reduce((a, c) => a + ((c[1] === bin) ? c[0] : 0), 0);
 
@@ -324,6 +324,26 @@ function helper(state, animate, animations) {
 
     }
 
+    function initStats() {
+        for (let bin in state.binToGroupKey) {
+            const binIndex = parseInt(bin, 10) - 1;
+            const mainKeys = state.binToGroupKey[bin];
+            for (let mainKey of mainKeys) {
+                const { digits } = state.mainDigits[mainKey];
+                const counts = fz(digits.map(d => state.allSpans[d.ref.dataset.key].innerHTML));
+                for (let [count, number] of counts) {
+                    if (count === 0) continue;
+                    if (!(number in state.stats[state.FILENAME].bins[binIndex].req)) {
+                        state.stats[state.FILENAME].bins[binIndex].req[number] = 0;
+                        state.stats[state.FILENAME].bins[binIndex].cur[number] = 0;
+                    };
+                    state.stats[state.FILENAME].bins[binIndex].req[number] += count;
+                }
+            }
+        }
+        console.log(state.stats[state.FILENAME].bins)
+    }
+
     return {
         numberToCoord,
         coordToNumber,
@@ -338,6 +358,7 @@ function helper(state, animate, animations) {
         randBetween,
         animationChain,
         specialAnimationChain,
-        assignBins
+        assignBins,
+        initStats
     };
 }

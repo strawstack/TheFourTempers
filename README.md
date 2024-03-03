@@ -7,6 +7,8 @@
     - UI should reflect new file state.
 - [ ] On start, numbers animate onto the screen randomly (opacity from 0 to 1)
     - View is frozen until all numbers are showing 
+- [ ] Have numbers flash (any flourecent color) if they are special, are about to move, and above a certian size.
+    - This will increase the value of making numbers large when they are suspicious
 
 - [x] Some numbers have behaviours (see below for details)
     - All digits have a base animation that is used to set their offset based on their current size (and cellsize).

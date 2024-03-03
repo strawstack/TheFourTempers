@@ -55,6 +55,7 @@
     state.getRandom = null; // lazy init
     state.mainDigits = null;
     state.digitOffset = null;
+    state.stats = null; // lazy load in main, pulls from local storage
 
     // Refs
     state.screen = document.querySelector(".screen");
@@ -70,7 +71,7 @@
     const { calculate } = calculateFrame(state, animate, animations);
     
     const help = helper(state, animate, animations);
-    const { calcMagnification, selectDigit, animationChain, specialAnimationChain, assignBins } = help;
+    const { calcMagnification, selectDigit, animationChain, specialAnimationChain, assignBins, initStats } = help;
 
     const { toggleBin } = binToggle(state, animate, animations);
     const { sendBin } = sendBinAnimation(state, help, animate, toggleBin);
@@ -102,6 +103,12 @@
         state.FILENAME = "Filename";
         const hash = Array(16).fill(null).map((e, i) => CryptoJS.SHA256(`${state.FILENAME}${i}`).toString()).join(""); // 16 *  64 is over 1000
         state.getRandom = randomFactory(hash);
+
+        state.stats = window.localStorage.getItem("stats");
+        if (state.stats === null) state.stats = {};
+        state.stats[state.FILENAME] = {
+            "bins": [{req: {}, cur: {}}, {req: {}, cur: {}}, {req: {}, cur: {}}, {req: {}, cur: {}}, {req: {}, cur: {}}] // init by initStats below
+        };
         
         Array(state.COLS * state.ROWS).fill(null).forEach((e, i) => {
             state.digitContainer.appendChild(
@@ -138,13 +145,15 @@
 
         calcBehaviour();
 
-        assignBins();
-
         state.mainDigits = {};
         state.groups.forEach(g => {
             const { key } = g.digits[g.main].ref.dataset;
             state.mainDigits[key] = g;
         });
+
+        assignBins();
+
+        initStats();
 
         state.digitOffset = {};
         state.allDigits.forEach(e => {
