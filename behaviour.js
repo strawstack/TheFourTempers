@@ -27,20 +27,23 @@ function behaviour(state, { coordToNumber, randBetween }, animate) {
         const SPAN_SIZE = 5;
 
         // Fill out groupSpans and other behaviour state
-        const col_dividers = distribute(20, Array(3).fill(0));
-        const row_dividers = distribute(10, Array(2).fill(0));
+        const col_dividers = distribute(18, Array(3).fill(0)); // 18 + 2 for padding
+        const row_dividers = distribute(8, Array(2).fill(0)); // 8 + 2 for padding
 
         function calcGroupsSpans(col_div, row_div) {
             let colPrefix = [0, ...prefixSum(col_div)];
             let rowPrefix = [0, ...prefixSum(row_div)];
             
+            // To center, given padding of 2
+            const shift = 1;
+
             const groupSpans = [];
             Array(3).fill(null).forEach((e, yi) => {
                 const spans = [];
                 Array(4).fill(null).forEach((e, xi) => {
                     spans.push({
-                        x: colPrefix[xi] + xi * SPAN_SIZE,
-                        y: rowPrefix[yi] + yi * SPAN_SIZE
+                        x: colPrefix[xi] + xi * SPAN_SIZE + shift,
+                        y: rowPrefix[yi] + yi * SPAN_SIZE + shift
                     });
                 });
                 groupSpans.push(spans);

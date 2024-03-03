@@ -65,7 +65,7 @@
 
     // Imports
     const { animate, animations } = animation();
-    const { calculate } = calculateFrame(state, animations);
+    const { calculate } = calculateFrame(state, animate, animations);
     
     const help = helper(state, animate, animations);
     const { calcMagnification, selectDigit, animationChain, specialAnimationChain } = help;

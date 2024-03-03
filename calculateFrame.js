@@ -1,4 +1,4 @@
-function calculateFrame(state, animations) {
+function calculateFrame(state, animate, animations) {
 
     const {
         numberToCoord,
@@ -6,7 +6,7 @@ function calculateFrame(state, animations) {
         sub,
         calcMagnification,
         selectDigit
-    } = helper(state);
+    } = helper(state, animate, animations);
 
     const SPEED = 5;
     const FRICTION = 0.9;
