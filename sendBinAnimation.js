@@ -15,9 +15,36 @@ function sendBinAnimation(state, { sub, mag, calcMagnification, wait }, animate,
         state.currentVelocity = {x: 0, y: 0};
         "wasd".split("").forEach(c => state.isKeyDown[c] = false);
         
+        function find(lst, condition) {
+            for (let e of lst) {
+                if (condition(e)) {
+                    return e;
+                }
+            }
+            return undefined;
+        }
+
         // Check correctness
         const isCorrect = () => {
-            // TODO - debug correctness implementation
+
+            const selected = Object.keys(state.selected);
+
+            // selection containes a main digit
+            const mainDigit = find(selected, k => k in state.mainDigits);
+            if (mainDigit === undefined) return false;
+
+            // main digit from selection matches bin
+            if (!state.binToGroupKey[activeBin].includes(mainDigit)) return false;
+
+            // get selection digits
+            const { digits } = find(state.groups, g => g.digits[g.main].ref.dataset.key === mainDigit);
+
+            // digits and selection are same length
+            if (digits.length !== selected.length) return false;
+            
+            // all digits present in selection
+            if (!digits.every(d => d.ref.dataset.key in state.selected)) return false;
+
             return true;
         };
         const correct = isCorrect();
@@ -90,6 +117,15 @@ function sendBinAnimation(state, { sub, mag, calcMagnification, wait }, animate,
     
         // Wipe selection
         state.selected = null;
+
+        // If correct modify totals
+        if (correct) {
+            console.log("correct!");
+
+        } else {
+            console.log("no!");
+
+        }
     
         await wait(500);
     

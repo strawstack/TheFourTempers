@@ -264,14 +264,16 @@ function helper(state, animate, animations) {
 
     function prepareForBin(index, bin) {
 
-        const counts = mostFreq(state.groups[index].digits.map(d => state.allSpans[d.ref.dataset.key].innerHTML));
+        const group = state.groups[index];
+
+        const counts = mostFreq(group.digits.map(d => state.allSpans[d.ref.dataset.key].innerHTML));
 
         const existingBinCount = counts.reduce((a, c) => a + ((c[1] === bin) ? c[0] : 0), 0);
 
         // You need to total the highest frequency, and if second is tied then add one
         let needed = counts[0][0] - existingBinCount + ((counts.length > 1 && counts[0][0] === counts[1][0]) ? 1 : 0);
         
-        for (let { ref } of state.groups[index].digits) {
+        for (let { ref } of group.digits) {
             
             if (needed === 0) break;
 
@@ -285,11 +287,17 @@ function helper(state, animate, animations) {
         }
 
         // Mark with bin number as a hint
-        state.groups[index].digits.forEach(d => {
+        group.digits.forEach(d => {
             const { key } = d.ref.dataset;
             const span = state.allSpans[key];
             span.dataset.bin = bin;
         });
+
+        // Add main digit to tracker for identification
+        if (!(bin in state.binToGroupKey)) state.binToGroupKey[bin] = [];
+        state.binToGroupKey[bin].push(
+            group.digits[group.main].ref.dataset.key // the key for the main digit
+        );
     }
 
     function assignBins() {

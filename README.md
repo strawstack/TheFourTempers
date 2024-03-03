@@ -32,6 +32,7 @@
 
 # Bugs
 
+- [ ] Digits remain "excited" after correct submission.
 - [x] Number could animate visually into the box if they were children of `screen` instead of `digitContainer`
     - But the math for their position will have to be reworked for this to happen.
     - Fix: The height of the top_bot_section needs to be subtracted from the digitContainer top offset .

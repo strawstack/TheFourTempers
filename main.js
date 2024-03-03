@@ -47,6 +47,7 @@
         state.POPUP_TOP_OFFSET + state.POPUP_HEIGHT
     ];
     state.controllers = {};
+    state.binToGroupKey = {};
     state.FILENAME = null;
     state.getRandom = null;
     state.groups = null;
