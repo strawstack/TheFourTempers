@@ -264,8 +264,6 @@ function helper(state, animate, animations) {
 
     function prepareForBin(index, bin) {
 
-        if (index === 0) debugger;
-
         const counts = mostFreq(state.groups[index].digits.map(d => state.allSpans[d.ref.dataset.key].innerHTML));
 
         const existingBinCount = counts.reduce((a, c) => a + ((c[1] === bin) ? c[0] : 0), 0);

@@ -132,6 +132,7 @@
             const top = state.POPUP_TOP_OFFSET + state.POPUP_HEIGHT;
             popup.style.left = `${left}px`;
             popup.style.top  = `${top}px`;
+            popup.style.removeProperty("display");
         });
 
         calcBehaviour();
