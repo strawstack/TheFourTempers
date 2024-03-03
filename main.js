@@ -51,6 +51,7 @@
     state.groups = null;
     state.groupSpans = null; // 2D rects to contain each behaviour group
     state.getRandom = null; // lazy init
+    state.mainDigits = null;
     state.digitOffset = null;
 
     // Refs
@@ -134,6 +135,55 @@
         animationChain(key);
     }
 
+    async function specialAnimationChain(key) {
+        
+        // Chance to wait in place
+        if (state.getRandom() < 0.7) {
+            await wait( randBetween(10000, 12000) );
+        }
+
+        const move = async () => {
+
+            const oldPos = state.digitOffset[key];
+        
+            // Always vist an extreme
+            let newPos = {
+                x: (state.getRandom() < 0.5) ? -1 : 1,
+                y: (state.getRandom() < 0.5) ? -1 : 1
+            };
+    
+            // Chance to return to center
+            if (state.getRandom() < 0.2) newPos = {x: 0, y: 0};
+    
+            const delta = sub(newPos, oldPos);
+            const duration = randBetween(1000, 1500); // Move relatively faster
+    
+            await animate(`base_${key}`, {
+                from: oldPos, 
+                to: newPos,
+                action: pos => {
+                    state.digitOffset[key] = pos;
+                },
+                interpolate: (from, to, percent) => {
+                    const pos = add(
+                        oldPos,
+                        mult(delta, percent)
+                    );
+                    return pos;
+                },
+                duration
+            });
+
+        };
+
+        // Move twice quickly
+        await move();
+        await move();
+
+        // Continue chain
+        specialAnimationChain(key);
+    }
+
     function main() {
 
         state.FILENAME = "Filename";
@@ -174,6 +224,12 @@
 
         calcBehaviour(state);
 
+        state.mainDigits = {};
+        state.groups.forEach(g => {
+            const { key } = g.digits[g.main].ref.dataset;
+            state.mainDigits[key] = g;
+        });
+
         state.digitOffset = {};
         state.allDigits.forEach(e => {
             state.digitOffset[e.dataset.key] = {
@@ -184,7 +240,13 @@
 
         state.allDigits.forEach(d => {
             const { key } = d.dataset;
-            animationChain(key);
+            if (key in state.mainDigits) {
+                specialAnimationChain(key);
+
+            } else {
+                animationChain(key);
+
+            }
         });
 
         window.addEventListener("keydown", e => {

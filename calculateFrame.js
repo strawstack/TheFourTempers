@@ -143,15 +143,15 @@ function calculateFrame(state, animations) {
         const { cellSize } = state.zoom_lookup[state.zoomLevel];
         state.allDigits.forEach(d => {
             const { key } = d.dataset;
+
             const span = state.allSpans[key];
 
             const { x: leftPercent, y: topPercent } = state.digitOffset[key];
 
             const { height, width } = span.getBoundingClientRect();
             
-            // Standard numbers only deviate by have the amount
-            const vSpace = (cellSize - height) / 4;
-            const hSpace = (cellSize - width) / 4;
+            const vSpace = (cellSize - height) / 2;
+            const hSpace = (cellSize - width) / 2;
 
             const leftDelta = hSpace * leftPercent;
             const topDelta = vSpace * topPercent;
