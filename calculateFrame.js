@@ -139,9 +139,28 @@ function calculateFrame(state, animations) {
             });
         }
 
-        // TODO: Animate group.main digits
+        // Apply digit offsets
+        const { cellSize } = state.zoom_lookup[state.zoomLevel];
+        state.allDigits.forEach(d => {
+            const { key } = d.dataset;
+            const span = state.allSpans[key];
 
-        // TODO: First frame in which group.main is only selected digit
+            const { x: leftPercent, y: topPercent } = state.digitOffset[key];
+
+            const { height, width } = span.getBoundingClientRect();
+            
+            // Standard numbers only deviate by have the amount
+            const vSpace = (cellSize - height) / 4;
+            const hSpace = (cellSize - width) / 4;
+
+            const leftDelta = hSpace * leftPercent;
+            const topDelta = vSpace * topPercent;
+            
+            span.style.left = `${leftDelta}px`;
+            span.style.top = `${topDelta}px`;
+        });
+
+        // TODO: First frame in which group.main is the only selected digit
         // begin animating remainder of the group
 
         // Process animations

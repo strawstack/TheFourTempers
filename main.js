@@ -66,7 +66,7 @@
     const { calculate } = calculateFrame(state, animations);
     
     const help = helper(state);
-    const { calcMagnification, selectDigit, wait, randBetween } = help;
+    const { calcMagnification, selectDigit, wait, randBetween, add, sub, mult } = help;
 
     const { toggleBin } = binToggle(state, animate, animations);
     const { sendBin } = sendBinAnimation(state, help, animate, toggleBin);
@@ -95,34 +95,40 @@
     }
 
     async function animationChain(key) {
-        
-        // Wait for a time in the current location or...
+
+        // 50% chance to wait in place
         if (state.getRandom() < 0.5) {
-
-            await wait(
-                randBetween(1000, 3000)
-            );
-
-        // ...move to a new location 
-        } else {
-            
-            const newPos = {
-                x: state.getRandom() * 2 - 1,
-                y: state.getRandom() * 2 - 1
-            };
-            const duration = randBetween(1000, 3000);
-            await animate(`base_${key}`, {
-                from: 0, 
-                to: duration,
-                action: n => {
-                    const percent = n/duration;
-                    state.digitOffset[key].left = percent * newPos.x;
-                    state.digitOffset[key].right = percent * newPos.y;
-                },  
-                duration
-            })
-
+            await wait( randBetween(5000, 8000) );
         }
+
+        const oldPos = state.digitOffset[key];
+        
+        let newPos = {
+            x: state.getRandom() * 2 - 1,
+            y: state.getRandom() * 2 - 1
+        };
+
+        // 50% chance to return to center
+        if (state.getRandom() < 0.5) newPos = {x: 0, y: 0};
+
+        const delta = sub(newPos, oldPos);
+        const duration = randBetween(3000, 7000);
+
+        await animate(`base_${key}`, {
+            from: oldPos, 
+            to: newPos,
+            action: pos => {
+                state.digitOffset[key] = pos;
+            },
+            interpolate: (from, to, percent) => {
+                const pos = add(
+                    oldPos,
+                    mult(delta, percent)
+                );
+                return pos;
+            },
+            duration
+        });
 
         // Continue chain
         animationChain(key);
@@ -141,6 +147,12 @@
         });
 
         state.allDigits = document.querySelectorAll(".digit");
+
+        state.allSpans = {};
+        state.allDigits.forEach(d => {
+            const { key } = d.dataset;
+            state.allSpans[key] = d.querySelector("span");
+        });
 
         // Align canvases
         state.canvasRef.forEach((canvas, i) => {
@@ -165,9 +177,8 @@
         state.digitOffset = {};
         state.allDigits.forEach(e => {
             state.digitOffset[e.dataset.key] = {
-                key: e.dataset.key,
-                left: 0,
-                top: 0
+                x: 0,
+                y: 0
             };
         });
 

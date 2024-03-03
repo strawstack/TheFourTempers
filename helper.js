@@ -29,6 +29,13 @@ function helper(state) {
         };
     }
 
+    function mult(v, s) { // vector by scalar
+        return {
+            x: v.x * s,
+            y: v.y * s,
+        };
+    }
+
     function getAdjecentDigits(allDigits, key) {
         const adj = [
             {x: -1, y: -1},
@@ -103,6 +110,7 @@ function helper(state) {
         mag,
         sub,
         add,
+        mult,
         calcMagnification,
         mouseRelativeToDigitContainer,
         selectDigit,
