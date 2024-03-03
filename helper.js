@@ -254,6 +254,70 @@ function helper(state, animate, animations) {
         specialAnimationChain(key);
     }
 
+    function mostFreq(lst) {
+        let count = Array(10).fill(0);
+        lst.forEach(e => count[parseInt(e, 10)] += 1);
+        count = count.map((c, i) => [c, i]);
+        count.sort((a, b) => b[0] - a[0]);
+        return count; // Ordered pairs [count, number]
+    }
+
+    function prepareForBin(index, bin) {
+
+        if (index === 0) debugger;
+
+        const counts = mostFreq(state.groups[index].digits.map(d => state.allSpans[d.ref.dataset.key].innerHTML));
+
+        const existingBinCount = counts.reduce((a, c) => a + ((c[1] === bin) ? c[0] : 0), 0);
+
+        // You need to total the highest frequency, and if second is tied then add one
+        let needed = counts[0][0] - existingBinCount + ((counts.length > 1 && counts[0][0] === counts[1][0]) ? 1 : 0);
+        
+        for (let { ref } of state.groups[index].digits) {
+            
+            if (needed === 0) break;
+
+            const span = state.allSpans[ref.dataset.key];
+            const value = parseInt(span.innerHTML, 10);
+            
+            if (value !== bin) {
+                span.innerHTML = bin;
+                needed -= 1;
+            }
+        }
+
+        // Mark with bin number as a hint
+        state.groups[index].digits.forEach(d => {
+            const { key } = d.ref.dataset;
+            const span = state.allSpans[key];
+            span.dataset.bin = bin;
+        });
+    }
+
+    function assignBins() {
+        
+        const indexList = Array(state.groups.length).fill(0).map((e, i) => i);
+
+        // Five times, take two random groups out, and assign to bin, for ten total
+        Array(5).fill(null).forEach((e, b) => {
+            const bin = b + 1;
+            const length = indexList.length;
+            const r1 = randBetween(0, length);
+            const r2 = randBetween(0, length);
+            const i1 = indexList.splice(r1 % length, 1)[0];
+            const i2 = indexList.splice(r2 % (length - 1), 1)[0];
+
+            prepareForBin(i1, bin);
+            prepareForBin(i2, bin);
+            
+        });
+
+        // Assign the last two groups to a bin
+        prepareForBin(indexList[0], randBetween(1, 5 + 1));
+        prepareForBin(indexList[1], randBetween(1, 5 + 1));
+
+    }
+
     return {
         numberToCoord,
         coordToNumber,
@@ -267,6 +331,7 @@ function helper(state, animate, animations) {
         wait,
         randBetween,
         animationChain,
-        specialAnimationChain
+        specialAnimationChain,
+        assignBins
     };
 }

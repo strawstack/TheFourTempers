@@ -59,6 +59,7 @@
     state.screen = document.querySelector(".screen");
     state.digitContainer = document.querySelector(".digit-container");
     state.allDigits = null; // lazy init in main
+    state.allSpans = null;
     state.popupRef = document.querySelectorAll(".popup");
     state.canvasRef = document.querySelectorAll("canvas");
     state.ctxRef = Array.from(state.canvasRef).map(c => c.getContext("2d"));
@@ -68,21 +69,20 @@
     const { calculate } = calculateFrame(state, animate, animations);
     
     const help = helper(state, animate, animations);
-    const { calcMagnification, selectDigit, animationChain, specialAnimationChain } = help;
+    const { calcMagnification, selectDigit, animationChain, specialAnimationChain, assignBins } = help;
 
     const { toggleBin } = binToggle(state, animate, animations);
     const { sendBin } = sendBinAnimation(state, help, animate, toggleBin);
     const { calcBehaviour } = behaviour(state, help, animate);
 
     // Helper
-    function createDigit(key) {
-        const n = Math.floor(Math.random() * 10);
+    function createDigit(key, hash) {
         const d = document.createElement("div");
         d.className = "digit";
         d.dataset.key = key;
         const span = document.createElement("span");
         d.appendChild(span);
-        span.innerHTML = n;
+        span.innerHTML = parseInt(hash[key], 16) % 10;
         return d;
     }
 
@@ -99,12 +99,12 @@
     function main() {
 
         state.FILENAME = "Filename";
-        const hash = Array(10).fill(null).map((e, i) => CryptoJS.SHA256(`${state.FILENAME}${i}`).toString()).join("");
+        const hash = Array(16).fill(null).map((e, i) => CryptoJS.SHA256(`${state.FILENAME}${i}`).toString()).join(""); // 16 *  64 is over 1000
         state.getRandom = randomFactory(hash);
         
         Array(state.COLS * state.ROWS).fill(null).forEach((e, i) => {
             state.digitContainer.appendChild(
-                createDigit(i)
+                createDigit(i, hash)
             );
         });
 
@@ -134,7 +134,9 @@
             popup.style.top  = `${top}px`;
         });
 
-        calcBehaviour(state);
+        calcBehaviour();
+
+        assignBins();
 
         state.mainDigits = {};
         state.groups.forEach(g => {
