@@ -46,6 +46,7 @@
         state.POPUP_TOP_OFFSET + state.POPUP_HEIGHT,
         state.POPUP_TOP_OFFSET + state.POPUP_HEIGHT
     ];
+    state.controllers = {};
     state.FILENAME = null;
     state.getRandom = null;
     state.groups = null;
@@ -66,8 +67,8 @@
     const { animate, animations } = animation();
     const { calculate } = calculateFrame(state, animations);
     
-    const help = helper(state);
-    const { calcMagnification, selectDigit, wait, randBetween, add, sub, mult } = help;
+    const help = helper(state, animate, animations);
+    const { calcMagnification, selectDigit, animationChain, specialAnimationChain } = help;
 
     const { toggleBin } = binToggle(state, animate, animations);
     const { sendBin } = sendBinAnimation(state, help, animate, toggleBin);
@@ -93,95 +94,6 @@
             return parseInt(`${hash[index]}${hash[index2]}`, 16) / 256; // Returns [0 to 1) (precision 1/255)
         }
         return getRandom;
-    }
-
-    async function animationChain(key) {
-
-        // 50% chance to wait in place
-        if (state.getRandom() < 0.5) {
-            await wait( randBetween(5000, 8000) );
-        }
-
-        const oldPos = state.digitOffset[key];
-        
-        let newPos = {
-            x: state.getRandom() * 2 - 1,
-            y: state.getRandom() * 2 - 1
-        };
-
-        // 50% chance to return to center
-        if (state.getRandom() < 0.5) newPos = {x: 0, y: 0};
-
-        const delta = sub(newPos, oldPos);
-        const duration = randBetween(3000, 7000);
-
-        await animate(`base_${key}`, {
-            from: oldPos, 
-            to: newPos,
-            action: pos => {
-                state.digitOffset[key] = pos;
-            },
-            interpolate: (from, to, percent) => {
-                const pos = add(
-                    oldPos,
-                    mult(delta, percent)
-                );
-                return pos;
-            },
-            duration
-        });
-
-        // Continue chain
-        animationChain(key);
-    }
-
-    async function specialAnimationChain(key) {
-        
-        // Chance to wait in place
-        if (state.getRandom() < 0.7) {
-            await wait( randBetween(10000, 12000) );
-        }
-
-        const move = async () => {
-
-            const oldPos = state.digitOffset[key];
-        
-            // Always vist an extreme
-            let newPos = {
-                x: (state.getRandom() < 0.5) ? -1 : 1,
-                y: (state.getRandom() < 0.5) ? -1 : 1
-            };
-    
-            // Chance to return to center
-            if (state.getRandom() < 0.2) newPos = {x: 0, y: 0};
-    
-            const delta = sub(newPos, oldPos);
-            const duration = randBetween(1000, 1500); // Move relatively faster
-    
-            await animate(`base_${key}`, {
-                from: oldPos, 
-                to: newPos,
-                action: pos => {
-                    state.digitOffset[key] = pos;
-                },
-                interpolate: (from, to, percent) => {
-                    const pos = add(
-                        oldPos,
-                        mult(delta, percent)
-                    );
-                    return pos;
-                },
-                duration
-            });
-
-        };
-
-        // Move twice quickly
-        await move();
-        await move();
-
-        // Continue chain
-        specialAnimationChain(key);
     }
 
     function main() {
@@ -321,6 +233,28 @@
         window.addEventListener("mouseup", e => {
             if (state.sendBinAnimation) return;
             state.mouseDown = false;
+
+            // Switch non-special digits back to normal animation pattern
+            for (let key in state.selected) {
+                if (key in state.mainDigits) {
+                    const { digits } = state.mainDigits[key];
+                    for (let { ref } of digits) {
+                        
+                        const dkey = ref.dataset.key;
+                        if (dkey in state.mainDigits) continue;
+                        
+                        // Cancel animation and promise
+                        delete animations[`base_${dkey}`]; 
+                        if (`base_${dkey}` in state.controllers) {
+                            state.controllers[`base_${dkey}`].abort();
+                            delete state.controllers[`base_${dkey}`];
+                        };
+
+                        animationChain(dkey);
+                    }
+                }
+            }
+
             state.selected = null;
         });
 

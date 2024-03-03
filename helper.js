@@ -1,4 +1,4 @@
-function helper(state) {
+function helper(state, animate, animations) {
 
     function numberToCoord(n) {
         return {
@@ -67,9 +67,23 @@ function helper(state) {
         });
     }
 
-    async function wait(ms) {
+    async function wait(ms, signal) {
         return new Promise((res, rej) => {
-            setTimeout(res, ms);
+
+            if (signal !== undefined && signal.aborted) {
+                return Promise.reject(new DOMException('Aborted', 'AbortError'));
+            }
+
+            const timeout = setTimeout(res, ms);
+    
+            // Listen for abort event on signal
+            if (signal !== undefined) {
+                signal.addEventListener('abort', () => {
+                    window.clearTimeout(timeout);
+                    rej(new DOMException('Aborted', 'AbortError'));
+                });
+            }
+            
         });
     }
 
@@ -98,10 +112,146 @@ function helper(state) {
         const key = keyFromMouse( mouseRelativeToDigitContainer(mouse) );
         if (state.selected === null) state.selected = {};
         state.selected[key] = true;
+
+        // One main digit is selected, switch animation style of others in group
+        if (key in state.mainDigits && Object.keys(state.selected).length === 1) {
+            const { digits } = state.mainDigits[key];
+            digits.forEach(({ref}) => {
+
+                const { key } = ref.dataset;
+                
+                // Cancel animation and promise
+                delete animations[`base_${key}`];
+                if (`base_${key}` in state.controllers) {
+                    state.controllers[`base_${key}`].abort();
+                    delete state.controllers[`base_${key}`];
+                };
+
+                specialAnimationChain(key);
+            });
+        }
     }
 
     function randBetween(a, b) { // [a, b) exclusive
         return a + Math.floor(state.getRandom() * (b - a));
+    }
+
+    async function animationChain(key) {
+
+        let signal = null;
+        if (!(`base_${key}` in state.controllers)) {
+            const controller = new AbortController();
+            signal = controller.signal;
+            state.controllers[`base_${key}`] = controller;
+        
+        } else {
+            signal = state.controllers[`base_${key}`].signal;
+
+        }
+
+        // 50% chance to wait in place
+        if (state.getRandom() < 0.5) {
+            try {
+                await wait( randBetween(5000, 8000), signal );
+            } catch(e) { return; }
+            
+        }
+
+        const oldPos = state.digitOffset[key];
+        
+        let newPos = {
+            x: state.getRandom() * 2 - 1,
+            y: state.getRandom() * 2 - 1
+        };
+
+        // 50% chance to return to center
+        if (state.getRandom() < 0.5) newPos = {x: 0, y: 0};
+
+        const delta = sub(newPos, oldPos);
+        const duration = randBetween(3000, 7000);
+        try {
+            await animate(`base_${key}`, {
+                from: oldPos, 
+                to: newPos,
+                action: pos => {
+                    state.digitOffset[key] = pos;
+                },
+                interpolate: (from, to, percent) => {
+                    const pos = add(
+                        oldPos,
+                        mult(delta, percent)
+                    );
+                    return pos;
+                },
+                duration
+            }, signal);
+        } catch(e) { return; }
+
+        // Continue chain
+        animationChain(key);
+    }
+
+    async function specialAnimationChain(key) {
+        
+        let signal = null;
+        if (!(`base_${key}` in state.controllers)) {
+            const controller = new AbortController();
+            signal = controller.signal;
+            state.controllers[`base_${key}`] = controller;
+
+        } else {
+            signal = state.controllers[`base_${key}`].signal;
+
+        }
+
+        // Chance to wait in place
+        if (state.getRandom() < 0.7) {
+            try {
+                await wait( randBetween(10000, 12000), signal );
+            } catch(e) { return; }
+        }
+
+        const move = async () => {
+
+            const oldPos = state.digitOffset[key];
+        
+            // Always vist an extreme
+            let newPos = {
+                x: (state.getRandom() < 0.5) ? -1 : 1,
+                y: (state.getRandom() < 0.5) ? -1 : 1
+            };
+    
+            // Chance to return to center
+            if (state.getRandom() < 0.2) newPos = {x: 0, y: 0};
+    
+            const delta = sub(newPos, oldPos);
+            const duration = randBetween(1000, 1500); // Move relatively faster
+    
+            await animate(`base_${key}`, {
+                from: oldPos, 
+                to: newPos,
+                action: pos => {
+                    state.digitOffset[key] = pos;
+                },
+                interpolate: (from, to, percent) => {
+                    const pos = add(
+                        oldPos,
+                        mult(delta, percent)
+                    );
+                    return pos;
+                },
+                duration
+            }, signal);
+        };
+
+        // Move twice quickly
+        try {
+            await move();
+            await move();
+        } catch(e) { return; }
+
+        // Continue chain
+        specialAnimationChain(key);
     }
 
     return {
@@ -115,6 +265,8 @@ function helper(state) {
         mouseRelativeToDigitContainer,
         selectDigit,
         wait,
-        randBetween
+        randBetween,
+        animationChain,
+        specialAnimationChain
     };
 }
