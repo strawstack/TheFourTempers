@@ -62,6 +62,9 @@
     state.digitContainer = document.querySelector(".digit-container");
     state.allDigits = null; // lazy init in main
     state.allSpans = null;
+    state.binFills = document.querySelectorAll(".percent>.fill");
+    state.binPercent = document.querySelectorAll(".percent>span");
+    state.temperFills = document.querySelectorAll(".popup .bar .fill");
     state.popupRef = document.querySelectorAll(".popup");
     state.canvasRef = document.querySelectorAll("canvas");
     state.ctxRef = Array.from(state.canvasRef).map(c => c.getContext("2d"));
@@ -107,6 +110,7 @@
         state.stats = window.localStorage.getItem("stats");
         if (state.stats === null) state.stats = {};
         state.stats[state.FILENAME] = {
+            "collected": {},
             "bins": [{req: {}, cur: {}}, {req: {}, cur: {}}, {req: {}, cur: {}}, {req: {}, cur: {}}, {req: {}, cur: {}}] // init by initStats below
         };
         

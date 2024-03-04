@@ -341,7 +341,6 @@ function helper(state, animate, animations) {
                 }
             }
         }
-        console.log(state.stats[state.FILENAME].bins)
     }
 
     return {

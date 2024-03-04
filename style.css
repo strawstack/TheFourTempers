@@ -3,7 +3,7 @@
 :root {
     --font: #8DF4FF;
     --background: #024179;
-    --aberrarion: rgba(2, 89, 166, 1);
+    --aberrarion: #0259a6;
     --black: #333;
 
     --screen-width: 1000px;
@@ -22,6 +22,8 @@
     --bin-border: 3px;
     --bin-outer-pad: 70px;
     --bin-inner-pad: 20px;
+
+    --bin-fill-1: 50px; /* 150px max */
 }
 
 html, body {
@@ -138,10 +140,24 @@ body {
                     display: flex;
                     align-items: center;
                     margin-top: 4px;
+                    position: relative;
                 }
 
+                    .percent .fill {
+                        position: absolute;
+                        background: var(--font);
+                        top: 0px;
+                        bottom: 0px;
+                        left: 0px;
+                        width: 0px; /* adjust to set fill (var(--bin-width) max) */
+                    }
+
                     .percent>span {
+                        position: relative;
+                        z-index: 10;
                         margin-left: 6px;
+                        -webkit-text-stroke-width: 1px;
+                        -webkit-text-stroke-color: var(--background);
                     }
 
                 .label, .percent {
@@ -172,7 +188,7 @@ canvas {
 .popup {
     position: absolute;
     z-index: 5;
-    width: 150px; /* bin width (before border) */
+    width: var(--bin-width);
     height: 248px;
     border: 3px solid var(--font);
     background: var(--background);
@@ -212,27 +228,6 @@ canvas {
                 top: 0px;
                 left: 0px;
                 bottom: 0px;
-                right: 30px; /* adjust to set fill to (94 - value) */
                 background: var(--font);
+                width: 64px; /* adjust to set fill (94px max) */
             }
-/*
-<div class="c1 popup">
-    <div class="popup-label">01</div>
-    <div class="temper">
-        <div class="temper-label">WO</div>
-        <div class="bar"><div class="fill"></div></div>
-    </div>
-    <div class="temper">
-        <div class="temper-label">FC</div>
-        <div class="bar"><div class="fill"></div></div>
-    </div>
-    <div class="temper">
-        <div class="temper-label">DR</div>
-        <div class="bar"><div class="fill"></div></div>
-    </div>
-    <div class="temper">
-        <div class="temper-label">MA</div>
-        <div class="bar"><div class="fill"></div></div>
-    </div>
-</div>
-*/

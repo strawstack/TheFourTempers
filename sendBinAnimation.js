@@ -2,7 +2,7 @@ function sendBinAnimation(state, { sub, mag, calcMagnification, wait }, animate,
 
     async function sendBin(activeBin) {
 
-        const activeBinNumber = parseInt(activeBin, 10); 
+        const activeBinNumber = parseInt(activeBin, 10) - 1; 
     
         // Start binAnimation (freeze inputs)
         state.sendBinAnimation = true;
@@ -115,18 +115,26 @@ function sendBinAnimation(state, { sub, mag, calcMagnification, wait }, animate,
     
         clones.forEach(e => e.remove());
     
-        // Wipe selection
-        state.selected = null;
-
         // If correct modify totals
         if (correct) {
-            console.log("correct!");
-
+            const mainDigit = find(Object.keys(state.selected), k => k in state.mainDigits);
+            if (!(mainDigit in state.stats[state.FILENAME]["collected"])) {
+                state.stats[state.FILENAME]["collected"][mainDigit] = true;
+                const { digits } = find(state.groups, g => g.digits[g.main].ref.dataset.key === mainDigit);
+                digits.forEach(d => {
+                    const value = state.allSpans[d.ref.dataset.key].innerHTML;
+                    state.stats[state.FILENAME]["bins"][activeBinNumber].cur[value] += 1;
+                });
+            }
+            
         } else {
             console.log("no!");
 
         }
     
+        // Wipe selection
+        state.selected = null;
+
         await wait(500);
     
         // Pop dialogue
@@ -134,7 +142,7 @@ function sendBinAnimation(state, { sub, mag, calcMagnification, wait }, animate,
             from: state.POPUP_TOP_OFFSET + state.POPUP_HEIGHT,
             to: state.POPUP_TOP_OFFSET,
             action: n => {
-                state.popupHeight[activeBinNumber - 1] = n;
+                state.popupHeight[activeBinNumber] = n;
             },
             duration: 500
         });
@@ -158,7 +166,7 @@ function sendBinAnimation(state, { sub, mag, calcMagnification, wait }, animate,
             from: state.POPUP_TOP_OFFSET,
             to: state.POPUP_TOP_OFFSET + state.POPUP_HEIGHT,
             action: n => {
-                state.popupHeight[activeBinNumber - 1] = n;
+                state.popupHeight[activeBinNumber] = n;
             },
             duration: 500
         });

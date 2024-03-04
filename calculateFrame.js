@@ -84,6 +84,15 @@ function calculateFrame(state, animate, animations) {
         }
     }
 
+    function calcTempersPercents(req, cur) {
+        const tReq = [0, 0, 0, 0];
+        const tCur = [0, 0, 0, 0];
+        const numberLookup = [0, 1, 2, 0, 0, 1, 3, 2, 3, 3];
+        Object.keys(req).forEach(n => tReq[numberLookup[parseInt(n, 10)]] += req[n]);
+        Object.keys(cur).forEach(n => tCur[numberLookup[parseInt(n, 10)]] += cur[n]);
+        return tReq.map((r, i) => tCur[i] / r);
+    }
+
     function render(timestamp) {
 
         state.digitContainer.style.top = `${state.digitContainerPosition.y}px`;
@@ -160,8 +169,17 @@ function calculateFrame(state, animate, animations) {
             span.style.top = `${topDelta}px`;
         });
 
-        // TODO: First frame in which group.main is the only selected digit
-        // begin animating remainder of the group
+        // Adjust UI to reflect stats
+        state.stats[state.FILENAME]["bins"].forEach(({req, cur}, binIndex) => {
+            const binCompletion = Object.values(cur).reduce((a, c) => a + c) / Object.values(req).reduce((a, c) => a + c);
+            state.binFills[binIndex].style.width = `${150 * binCompletion}px`;
+            state.binPercent[binIndex].innerHTML = `${Math.floor(binCompletion * 100)}%`;
+            const tempers = calcTempersPercents(req, cur);
+            const startIndex = binIndex * 4;
+            for (let i = startIndex; i < startIndex + 4; i++) {
+                state.temperFills[i].style.width = `${94 * tempers[i - startIndex]}px`;
+            }
+        });
 
         // Process animations
         for (let key in animations) {
