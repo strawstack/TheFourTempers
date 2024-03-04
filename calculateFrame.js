@@ -5,7 +5,8 @@ function calculateFrame(state, animate, animations) {
         mag,
         sub,
         calcMagnification,
-        selectDigit
+        selectDigit,
+        padLeft
     } = helper(state, animate, animations);
 
     const SPEED = 5;
@@ -170,8 +171,10 @@ function calculateFrame(state, animate, animations) {
         });
 
         // Adjust UI to reflect stats
+        let completion = 0; // max five
         state.stats[state.FILENAME]["bins"].forEach(({req, cur}, binIndex) => {
             const binCompletion = Object.values(cur).reduce((a, c) => a + c) / Object.values(req).reduce((a, c) => a + c);
+            completion += binCompletion;
             state.binFills[binIndex].style.width = `${150 * binCompletion}px`;
             state.binPercent[binIndex].innerHTML = `${Math.floor(binCompletion * 100)}%`;
             const tempers = calcTempersPercents(req, cur);
@@ -180,6 +183,14 @@ function calculateFrame(state, animate, animations) {
                 state.temperFills[i].style.width = `${94 * tempers[i - startIndex]}px`;
             }
         });
+
+        // Global file completion bars
+        const completionPercent = completion / 5;
+        const showLimit = Math.floor(state.bars * completionPercent);
+        state.barsRef.forEach((e, i) => {
+            e.style.display = (i <= showLimit) ? 'inline-block' : 'none';
+        });
+        state.fileComplete.innerHTML = `${Math.floor(completionPercent * 100)}% Complete`;
 
         // Process animations
         for (let key in animations) {
@@ -194,6 +205,12 @@ function calculateFrame(state, animate, animations) {
                 action( interpolate(from, to, percent) );
             }
         }
+
+        // Update file location
+        const {x, y} = state.digitContainerPosition;
+        const { x: px, y: py } = state.locationPrefix;
+        state.location.innerHTML = `0x${px}${padLeft(Math.floor(Math.abs(x)).toString(16).toUpperCase(), "0", 3)} : 0x${py}${padLeft(Math.floor(Math.abs(y)).toString(16).toUpperCase(), "0", 3)}`;
+
     }
 
     function calculate(timestamp) {

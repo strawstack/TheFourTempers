@@ -324,6 +324,11 @@ function helper(state, animate, animations) {
 
     }
 
+    function padLeft(valStr, symb, n) {
+        if (valStr.length >= n) return valStr;
+        return Array(n - valStr.length).fill(symb).join("") + valStr;
+    }
+
     function initStats() {
         for (let bin in state.binToGroupKey) {
             const binIndex = parseInt(bin, 10) - 1;
@@ -358,6 +363,7 @@ function helper(state, animate, animations) {
         animationChain,
         specialAnimationChain,
         assignBins,
-        initStats
+        initStats,
+        padLeft
     };
 }

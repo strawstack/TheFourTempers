@@ -56,6 +56,8 @@
     state.mainDigits = null;
     state.digitOffset = null;
     state.stats = null; // lazy load in main, pulls from local storage
+    state.locationPrefix = { x: null, y: null };
+    state.bars = null;
 
     // Refs
     state.screen = document.querySelector(".screen");
@@ -68,27 +70,50 @@
     state.popupRef = document.querySelectorAll(".popup");
     state.canvasRef = document.querySelectorAll("canvas");
     state.ctxRef = Array.from(state.canvasRef).map(c => c.getContext("2d"));
+    state.location = document.querySelector(".location-container .location");
+    state.filenameRef = document.querySelector(".top .rect .filename");
+    state.fileComplete = document.querySelector(".top .rect .complete");
+    state.globalFill = document.querySelector(".screen .top .rect .fill");
+    state.barsRef = null; // lazy inside main
 
     // Imports
     const { animate, animations } = animation();
     const { calculate } = calculateFrame(state, animate, animations);
     
     const help = helper(state, animate, animations);
-    const { calcMagnification, selectDigit, animationChain, specialAnimationChain, assignBins, initStats } = help;
+    const { 
+        calcMagnification, selectDigit, animationChain, 
+        specialAnimationChain, assignBins, initStats, randBetween, 
+        wait, padLeft 
+    } = help;
 
     const { toggleBin } = binToggle(state, animate, animations);
     const { sendBin } = sendBinAnimation(state, help, animate, toggleBin);
     const { calcBehaviour } = behaviour(state, help, animate);
 
     // Helper
-    function createDigit(key, hash) {
+    async function createDigit(key, hash) {
         const d = document.createElement("div");
         d.className = "digit";
         d.dataset.key = key;
         const span = document.createElement("span");
         d.appendChild(span);
         span.innerHTML = parseInt(hash[key], 16) % 10;
-        return d;
+        d.style.opacity = "0";
+        state.digitContainer.appendChild(d);
+
+        await wait(randBetween(500, 1500));
+        
+        await animate(`opacity_${key}`, {
+            from: 0,
+            to: 1,
+            action: n => {
+                d.style.opacity = n;
+            },
+            duration: 800
+        });
+        
+        d.style.removeProperty("opacity");
     }
 
     function randomFactory(hash) {
@@ -101,11 +126,35 @@
         return getRandom;
     }
 
+    function createBar(opacity) {
+        const d = document.createElement("div");
+        d.className = "bar";
+        d.style.opacity = opacity;
+        d.style.display = "none";
+        return d;
+    }
+
     function main() {
 
         state.FILENAME = "Filename";
         const hash = Array(16).fill(null).map((e, i) => CryptoJS.SHA256(`${state.FILENAME}${i}`).toString()).join(""); // 16 *  64 is over 1000
         state.getRandom = randomFactory(hash);
+
+        state.filenameRef.innerHTML = state.FILENAME;
+
+        state.bars = Math.floor((1000 - 2 * 70 - 2 * 3) / 6); // 70 for margin, 3 for border
+        Array(state.bars).fill(null).forEach((e, i) => {
+            state.globalFill.appendChild(
+                createBar(i / state.bars)
+            );
+        });
+
+        state.barsRef = document.querySelectorAll(".top .bar");
+
+        state.locationPrefix = {
+            x: padLeft(randBetween(0, parseInt("FFF", 16)).toString(16).toUpperCase(), "0", 3),
+            y: padLeft(randBetween(0, parseInt("FFF", 16)).toString(16).toUpperCase(), "0", 3),
+        };
 
         state.stats = window.localStorage.getItem("stats");
         if (state.stats === null) state.stats = {};
@@ -115,9 +164,7 @@
         };
         
         Array(state.COLS * state.ROWS).fill(null).forEach((e, i) => {
-            state.digitContainer.appendChild(
-                createDigit(i, hash)
-            );
+            createDigit(i, hash);
         });
 
         state.allDigits = document.querySelectorAll(".digit");

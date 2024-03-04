@@ -2,14 +2,20 @@
 
 # Todo
 
-- [ ] Correct action should occur when numbers are sent to a bin.
-    - If correct, total the new file state.
-    - UI should reflect new file state.
-- [ ] On start, numbers animate onto the screen randomly (opacity from 0 to 1)
-    - View is frozen until all numbers are showing 
+- [ ] On initial launch, hold off on drawing anything until font is ready. Fade in all UI quickly, then fade in digits.
+    - Consider freazing inputs until app is ready
 - [ ] Have numbers flash (any flourecent color) if they are special, are about to move, and above a certian size.
     - This will increase the value of making numbers large when they are suspicious
+- [ ] Make zoom animated and follow mouse cursor
 
+- [x] File location in bottom bar
+- [x] UI in top bar
+    - [x] Track global progress in top bar
+- [x] On start, numbers animate onto the screen randomly (opacity from 0 to 1)
+    - Not implemented: View is frozen until all numbers are showing 
+- [x] Correct action should occur when numbers are sent to a bin.
+    - If correct, total the new file state.
+    - UI should reflect new file state.
 - [x] Some numbers have behaviours (see below for details)
     - All digits have a base animation that is used to set their offset based on their current size (and cellsize).
     - These animations set a value in `state.digitOffset` which is used by render to adjust the position of numbers.

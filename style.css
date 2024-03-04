@@ -12,6 +12,7 @@
     --divider-height: 10px; /* sync with DIVIDER_HEIGHT in main js */
     --mid-height: 500px; /* sync with MID_HEIGHT in main js */
 
+    --title-font-size: 1.8rem;
     --body-font-size: 1.5rem;
 
     --digit-font-size: 1.25rem; /* sync with zoomLevel in main js */
@@ -62,8 +63,60 @@ body {
 }
 
     .screen .top {
-
+        display: grid;
+        grid-template-columns: 70px 1fr 70px;
+        font-size: var(--title-font-size);
     }
+
+        .rect-contaner {
+            grid-column: 2 / 3;
+            display: flex;
+            align-items: center;
+        }
+
+        .screen .top .rect {
+            position: relative;
+            display: flex;
+            flex-grow: 1;
+            align-items: center;
+            padding: 2px;
+            border: 3px solid var(--font);
+            height: 35px;
+        }
+
+            .screen .top .rect .fill {
+                position: absolute;
+                top: 0px;
+                bottom: 0px;
+                left: 0px;
+                right: 0px;
+            }
+
+                .top .bar {
+                    display: inline-block;
+                    height: 100%;
+                    width: 6px;
+                }
+
+                .bar:nth-child(odd) {
+                    background: var(--font);
+                }
+
+            .screen .top .rect .filename {
+                position: relative;
+                z-index: 10;
+                left: 6px;
+                -webkit-text-stroke-width: 1px;
+                -webkit-text-stroke-color: var(--background);
+            }
+
+            .screen .top .rect .complete {
+                position: absolute;
+                right: calc(70px + 156px + 12px); /* 70 for rigth margin, 156 for bin width, 12 for padding */
+                z-index: 10;
+                -webkit-text-stroke-width: 1px;
+                -webkit-text-stroke-color: var(--background);
+            }
 
     .screen .divider {
         display: flex;
@@ -176,6 +229,12 @@ body {
 
             .location-container .thin-divider {
                 background: var(--font);
+            }
+
+            .location-container .location {
+                display: flex;
+                justify-content: center;
+                align-items: center;
             }
 
 canvas {
