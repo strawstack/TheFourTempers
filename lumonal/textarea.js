@@ -5,11 +5,14 @@ function textarea({ canvas, ctx }) {
         return window.getComputedStyle(document.body).getPropertyValue(name);
     }
 
-    // Set
-    const TEXTAREA_WIDTH = 78;
-    const ratio = window.devicePixelRatio;
-    const FONT_SIZE = ratio * 20;
+    // Get
     const FONT_COLOR = getCssVar('--font');
+    const CANVAS_WIDTH = parseInt(getCssVar('--screen-width'), 10);
+    const CANVAS_HEIGHT = parseInt(getCssVar('--screen-height'), 10);
+
+    // Set
+    const TEXTAREA_WIDTH = 80;
+    const FONT_SIZE = 23;
 
     ctx.font = `${FONT_SIZE}px 'Ubuntu Mono', monospace`;
 
@@ -20,12 +23,12 @@ function textarea({ canvas, ctx }) {
     const box_width = Math.ceil(box_width_real);
 
     const textareaWidth = TEXTAREA_WIDTH * box_width;
-    const TEXTAREA_HEIGTH = Math.floor(canvas.height / box_height);
+    const TEXTAREA_HEIGTH = Math.floor(CANVAS_HEIGHT / box_height);
     const textareaHeight = TEXTAREA_HEIGTH * box_height;
 
     const margin = {
-        x: canvas.width - textareaWidth,
-        y: canvas.height - textareaHeight
+        x: CANVAS_WIDTH - textareaWidth,
+        y: CANVAS_HEIGHT - textareaHeight
     };
 
     const pad = {
@@ -86,7 +89,9 @@ function textarea({ canvas, ctx }) {
             rows: TEXTAREA_HEIGTH,
             rowHeight: box_height,
             charWidth: box_width,
-            pad
+            pad,
+            CANVAS_WIDTH,
+            CANVAS_HEIGHT
         }
     };
 }

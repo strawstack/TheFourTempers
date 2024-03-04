@@ -11,10 +11,13 @@
 
         // Canvas
         const canvas = document.querySelector("canvas.screen");
-        const ratio = window.devicePixelRatio;
-        canvas.width = ratio * parseInt(getCssVar("--screen-width"), 10);
-        canvas.height = ratio * parseInt(getCssVar("--screen-height"), 10);
+
+        const scale = window.devicePixelRatio;
+        canvas.width = Math.floor(scale * parseInt(getCssVar("--screen-width"), 10));
+        canvas.height = Math.floor(scale * parseInt(getCssVar("--screen-height"), 10));
+
         const ctx = canvas.getContext("2d");
+        ctx.scale(scale, scale);
 
         // TextArea
         const ta = textarea({ canvas, ctx });

@@ -1,5 +1,5 @@
 function terminal({ canvas: canvasElement, ctx, ta: textarea }) {
-    const { write: textAreaWrite, draw, rowColFromGridPos, size } = textarea;
+    const { write: textAreaWrite, draw, size } = textarea;
 
     function getCssVar(name) {
         return window.getComputedStyle(document.body).getPropertyValue(name);
@@ -134,14 +134,18 @@ function terminal({ canvas: canvasElement, ctx, ta: textarea }) {
 
     const wipeTerminal = () => {
         ctx.fillStyle = color.clear;
-        ctx.fillRect(0, 0, canvasElement.width, canvasElement.height);
+        ctx.fillRect(0, 0, size.CANVAS_WIDTH, size.CANVAS_HEIGHT);
     };
 
     const copyCanvasGraphics = () => {
         const copy = document.createElement('canvas');
         const cctx = copy.getContext('2d');
-        copy.width  = canvasElement.width;
-        copy.height = canvasElement.height;
+        const scale = window.devicePixelRatio;
+        copy.width  = Math.floor(scale * size.CANVAS_WIDTH);
+        copy.height = Math.floor(scale * size.CANVAS_HEIGHT);
+        copy.style.width  = `${size.CANVAS_WIDTH}px`;
+        copy.style.height = `${size.CANVAS_HEIGHT}px`;
+        cctx.scale(scale, scale);
         cctx.drawImage(canvasElement, 0, 0);
         return copy;
     };
