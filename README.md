@@ -7,6 +7,7 @@
 - [ ] Have numbers flash (any flourecent color) if they are special, are about to move, and above a certian size.
     - This will increase the value of making numbers large when they are suspicious
 - [ ] Make zoom animated and follow mouse cursor
+- [ ] 100% Completion congragulations screen
 
 - [x] File location in bottom bar
 - [x] UI in top bar
