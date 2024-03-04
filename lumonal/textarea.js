@@ -6,8 +6,9 @@ function textarea({ canvas, ctx }) {
     }
 
     // Set
-    const TEXTAREA_WIDTH = 76;
-    const FONT_SIZE = 20;
+    const TEXTAREA_WIDTH = 78;
+    const ratio = window.devicePixelRatio;
+    const FONT_SIZE = ratio * 20;
     const FONT_COLOR = getCssVar('--font');
 
     ctx.font = `${FONT_SIZE}px 'Ubuntu Mono', monospace`;
@@ -70,6 +71,7 @@ function textarea({ canvas, ctx }) {
             }
         }
     };
+    // demo();
 
     return {
         write,
