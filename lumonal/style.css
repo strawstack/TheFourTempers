@@ -1,0 +1,34 @@
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+:root {
+    --font: #8DF4FF;
+    --background: #024179;
+    --aberrarion: #0259a6;
+    --black: #333;
+
+    --screen-width: 1000px;
+    --screen-height: 750px;
+
+    --body-font-size: 1.5rem;
+}
+
+html, body {
+    padding: 0px;
+    margin: 0px;
+    height: 100%;
+}
+
+.screen-container {
+    background: var(--black);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+canvas.screen {
+    width: var(--screen-width);
+    height: var(--screen-height);
+    border: 1px solid white;
+    /* cursor: none; */
+}
