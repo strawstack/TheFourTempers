@@ -2,6 +2,14 @@
 
 # Todo
 
+- [ ] Create boot animation
+    - Lines of text animate on screen
+    - Logo is shown
+- [ ] Show "macrodata" command after boot animation
+- [ ] Create rollodex animation
+- [ ] Show rollodex animation after filename is entered
+    - Allow click on rollodex
+- [ ] Launch TheFourTempers app from rollodex
 - [ ] On initial launch, hold off on drawing anything until font is ready. Fade in all UI quickly, then fade in digits.
     - Consider freazing inputs until app is ready
 - [ ] Have numbers flash (any flourecent color) if they are special, are about to move, and above a certian size.
