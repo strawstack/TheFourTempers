@@ -20,6 +20,8 @@ function terminal({ canvas: canvasElement, ctx, ta: textarea }) {
 
     let path = "/";
 
+    let macrodataMode = false;
+
     // Set inside writePrompt
     const cmdStart = {
         row: 0,
@@ -328,7 +330,7 @@ function terminal({ canvas: canvasElement, ctx, ta: textarea }) {
     };
 
     const writePrompt = () => {
-        const prompt = `${path}$ `;
+        const prompt = (macrodataMode) ? `> ` : `${path}$ `;
         writeWithCursor(prompt);
         cmdStart.row = cursor.row;
         cmdStart.col = cursor.col;
@@ -354,6 +356,23 @@ function terminal({ canvas: canvasElement, ctx, ta: textarea }) {
         wipe: {
             call: () => {
                 wipeTerminal();
+            }
+        },
+        macrodata: {
+            call: () => {
+                newLine();
+                newLine();
+
+                writeWithCursor(`ENTER FILENAME:`);
+                newLine();
+                writeWithCursor(`> `);
+                cmdStart.row = cursor.row;
+                cmdStart.col = cursor.col;
+
+                const extraLinesOffset = 1;
+                scroll(true, cursor.row - scrollY - extraLinesOffset);
+                drawCursor();
+                macrodataMode = true;
             }
         }
     };
@@ -387,6 +406,13 @@ function terminal({ canvas: canvasElement, ctx, ta: textarea }) {
 
         if (keyCode === ENTER) {
             const strCmd = cmd[cmd_index].join("");
+
+            if (macrodataMode) {
+                console.log(`Filename: ${strCmd}`);
+                console.log("Launching TheFourTempers app...");
+                return;
+            }
+
             const result = onCommandFunc(strCmd);
 
             cmd_index = 0;
@@ -453,12 +479,12 @@ function terminal({ canvas: canvasElement, ctx, ta: textarea }) {
                     const direction = 1;
                     const pos = nextTypeChangeFromCursor(direction);
                     wipeCursor();
-                    write(cursor.row, cursor.col, charAtCursor());
+                    write(cursor.row - scrollY, cursor.col, charAtCursor());
                     setCursor(pos.row, pos.col);
 
                 } else {
                     wipeCursor();
-                    write(cursor.row, cursor.col, charAtCursor());
+                    write(cursor.row - scrollY, cursor.col, charAtCursor());
                     setCursor(cursor.row, cursor.col + 1);
 
                 }
@@ -476,19 +502,36 @@ function terminal({ canvas: canvasElement, ctx, ta: textarea }) {
                     const direction = -1;
                     const pos = nextTypeChangeFromCursor(direction);
                     wipeCursor();
-                    write(cursor.row, cursor.col, charAtCursor());
+                    write(cursor.row - scrollY, cursor.col, charAtCursor());
                     setCursor(pos.row, pos.col);
 
                 } else {
                     wipeCursor();
-                    write(cursor.row, cursor.col, charAtCursor());
+                    write(cursor.row - scrollY, cursor.col, charAtCursor());
                     setCursor(cursor.row, cursor.col - 1);
 
                 }
             }
 
         } else if (isPrintable(key)) {
-            insertWithCursor(key);
+
+            if (ctrlKey && key === "c" || key === "C") {
+
+                const wipeCurrentCmd = () => {
+                    cmd[cmd_index] = [];
+                };
+
+                macrodataMode = false;
+                writeWithCursor(`^C`);
+                wipeCurrentCmd();
+                newLine();
+                writePrompt();
+
+            } else {
+                const symb = macrodataMode ? key.toUpperCase() : key;
+                insertWithCursor(symb);
+
+            }
 
         }
     });

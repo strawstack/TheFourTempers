@@ -40,6 +40,7 @@ function bash({ fs: filesystem, ter: terminal }) {
             call: () => {
                 const res = ["Available commands:"];
                 for (let cmd in commands) {
+                    if ("list" in commands[cmd] && commands[cmd]["list"] === false) continue;
                     res.push(`  ${cmd}: ${commands[cmd].info}`);
                 }
                 return {
@@ -153,7 +154,21 @@ function bash({ fs: filesystem, ter: terminal }) {
             },
             info: "Return the given text."
         },
-        // vim: a 'built-in' auto-registered command
+        macrodata: {
+            call: args => {
+                const MACRODATA_PATH = "/secret/lumon/severed";
+                if (pathStr() === MACRODATA_PATH) {
+                    return { cmd: "macrodata" };
+
+                } else {
+                    return {
+                        data: "Command not found."
+                    };
+                }
+            },
+            info: "Launch the macro-data refinement application.",
+            list: false
+        },
     };
 
     const registerNewCommand = ({name, call, info}) => {

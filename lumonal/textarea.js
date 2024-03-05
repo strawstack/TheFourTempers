@@ -75,7 +75,7 @@ function textarea({ canvas, ctx }) {
             }
         }
     };
-    demo();
+    // demo();
 
     return {
         write,

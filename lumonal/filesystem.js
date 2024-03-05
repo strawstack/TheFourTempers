@@ -8,7 +8,12 @@ function filesystem() {
                 }
             },
             'secret': {
-                "sam.txt": "this is the content of sam.txt.\nThis is a second line in sam.txt"
+                "sam.txt": "this is the content of sam.txt.\nThis is a second line in sam.txt",
+                "lumon": {
+                    "severed": {
+                        "macrodata": "executable file: type filename at prompt to run."
+                    }
+                }
             }
         }
     };
