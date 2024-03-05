@@ -10,6 +10,8 @@
 - [ ] Show rollodex animation after filename is entered
     - Allow click on rollodex
 - [ ] Launch TheFourTempers app from rollodex
+    - Top and bottom bars fade in 0.2s
+    - Then digits animate in with opacity
 - [ ] On initial launch, hold off on drawing anything until font is ready. Fade in all UI quickly, then fade in digits.
     - Consider freazing inputs until app is ready
 - [ ] Have numbers flash (any flourecent color) if they are special, are about to move, and above a certian size.
