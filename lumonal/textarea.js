@@ -11,7 +11,6 @@ function textarea({ canvas, ctx }) {
     const CANVAS_HEIGHT = parseInt(getCssVar('--screen-height'), 10);
 
     // Set
-    const TEXTAREA_WIDTH = 80;
     const FONT_SIZE = 23;
 
     ctx.font = `${FONT_SIZE}px 'Ubuntu Mono', monospace`;
@@ -21,6 +20,8 @@ function textarea({ canvas, ctx }) {
     const box_height = fontBoundingBoxAscent + fontBoundingBoxDescent;
 
     const box_width = Math.ceil(box_width_real);
+
+    const TEXTAREA_WIDTH = Math.floor(CANVAS_WIDTH / box_width);
 
     const textareaWidth = TEXTAREA_WIDTH * box_width;
     const TEXTAREA_HEIGTH = Math.floor(CANVAS_HEIGHT / box_height);
@@ -67,14 +68,14 @@ function textarea({ canvas, ctx }) {
     };
 
     const demo = () => {
-        const text = "abcdefghijklmnopqrstuvwxyzABCEDFGHIJKLMNOPQRSTUVWXYZmmmmmmmmmmmmmmmmmmmmmmmmmmmm";
+        const text = `abcdefghijklmnopqrstuvwxyzABCEDFGHIJKLMNOPQRSTUVWXYZ${Array(TEXTAREA_WIDTH - 52).fill("m").join("")}`;
         for (let y = 0; y < TEXTAREA_HEIGTH; y++) {
             for (let x = 0; x < TEXTAREA_WIDTH; x++) {
                 write(y, x, text[x]);
             }
         }
     };
-    // demo();
+    demo();
 
     return {
         write,

@@ -146,7 +146,14 @@ function terminal({ canvas: canvasElement, ctx, ta: textarea }) {
         copy.style.width  = `${size.CANVAS_WIDTH}px`;
         copy.style.height = `${size.CANVAS_HEIGHT}px`;
         cctx.scale(scale, scale);
-        cctx.drawImage(canvasElement, 0, 0);
+        cctx.drawImage(canvasElement, 
+            0, 0,
+            canvasElement.width,
+            canvasElement.height,
+            0, 0,
+            size.CANVAS_WIDTH,
+            size.CANVAS_HEIGHT
+        );
         return copy;
     };
 
@@ -166,8 +173,14 @@ function terminal({ canvas: canvasElement, ctx, ta: textarea }) {
 
             const copy = copyCanvasGraphics();
             wipeTerminal();
-            const moveOffset = -1 * offset;
-            ctx.drawImage(copy, 0, moveOffset * size.rowHeight);
+            ctx.drawImage(copy, 
+                0, offset * size.rowHeight,
+                copy.width,
+                copy.height,
+                0, 0,
+                size.CANVAS_WIDTH,
+                size.CANVAS_HEIGHT
+            );
             scrollY = newScrollY;
 
             // Restore characters
