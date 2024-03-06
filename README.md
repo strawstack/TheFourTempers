@@ -55,6 +55,8 @@
 
 # Bugs
 
+- [ ] Font loading event not called in Chrome causes blank screen on load. 
+    - See: https://developer.mozilla.org/en-US/docs/Web/API/FontFaceSet/loading_event 
 - [ ] Digits remain "excited" after correct submission.
 - [x] Number could animate visually into the box if they were children of `screen` instead of `digitContainer`
     - But the math for their position will have to be reworked for this to happen.
