@@ -7,7 +7,7 @@
     async function main() {
 
         // Canvas
-        const canvas = document.querySelector("canvas.screen");
+        const canvas = document.querySelector(".screen>canvas");
 
         const scale = window.devicePixelRatio;
         canvas.width = Math.floor(scale * parseInt(getCssVar("--screen-width"), 10));

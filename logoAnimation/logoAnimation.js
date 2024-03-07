@@ -3,11 +3,20 @@ function logoAnimation({ ctx, size }) {
     const FONT_SIZE = 62;
     const LINE_WIDTH = 5;
 
-    const arcDuration = 800;
-    const waitBeforeLines = 100; 
-    const lineDuration = 150;
-    const waitBetweenLines = 100;
+    const LOGO_WIDTH = 328;
+    const LOGO_HEIGHT = 42;
+
+    const arcDuration = 666;
+    const waitBeforeLines = 33;
+    const lineDuration = 333;
+    const waitBetweenLines = 33;
     const offsetDuration = 2 * arcDuration + 2 * lineDuration + waitBeforeLines + waitBetweenLines;
+    const waitBeforeLogoAppear = 33;
+    const logoAppear = 66;
+    const waitAfterLogoAppear = 1266;
+    const logoFade = 200;
+    const waitAfterLogoFade = 400;
+    const dropFade = 333;
 
     const state = {};
     const animations = {};
@@ -86,6 +95,10 @@ function logoAnimation({ ctx, size }) {
         opacity: 0
     };
 
+    state.logoRef = document.querySelector(".screen>.logo");
+    state.maskRef = document.querySelectorAll(".mask");
+    state.dropRef = document.querySelector(".drop");
+
     function calculate(timestamp) {
         
         for (let key in animations) {
@@ -125,6 +138,9 @@ function logoAnimation({ ctx, size }) {
     async function start() {
 
         ctx.font = `${FONT_SIZE}px 'M PLUS Rounded 1c', sans-serif`;
+
+        state.logoRef.style.left = `${size.WIDTH/2 - LOGO_WIDTH/2}px`;
+        state.logoRef.style.top = `${size.HEIGHT/2 - LOGO_HEIGHT/2}px`;
 
         // Create clipping region
         const createClip = data => {
@@ -206,6 +222,39 @@ function logoAnimation({ ctx, size }) {
             }
         });
 
+        await wait(waitBeforeLogoAppear);
+
+        await animation('logoAppear', {
+            from: 0,
+            to: 1,
+            duration: logoAppear,
+            action: n => {
+                state.logoRef.style.opacity = n;
+            }
+        });
+
+        await wait(waitAfterLogoAppear);
+
+        await animation('fadeAllExceptDrop', {
+            from: 1,
+            to: 0,
+            duration: logoFade,
+            action: n => {
+                state.maskRef.forEach(e => e.style.opacity = n);
+                ctx.globalAlpha = n;
+            }
+        });
+
+        await wait(waitAfterLogoFade);
+
+        await animation('fadeAllExceptDrop', {
+            from: 1,
+            to: 0,
+            duration: dropFade,
+            action: n => {
+                state.dropRef.style.opacity = n;
+            }
+        });
     }
 
     function renderRect(data) {
@@ -227,6 +276,8 @@ function logoAnimation({ ctx, size }) {
             data.from.x + data.percent * delta.x,
             data.from.y + data.percent * delta.y
         );
+        ctx.lineWidth = LINE_WIDTH;
+        ctx.strokeStyle = state.font;
         ctx.stroke();
     }
 

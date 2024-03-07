@@ -26,10 +26,20 @@ html, body {
     align-items: center;
 }
 
-canvas.screen {
-    width: var(--screen-width);
-    height: var(--screen-height);
-    border: 1px solid white;
-    background: var(--background);
-    /* cursor: none; */
-}
+    .screen {
+        position: relative;
+    }
+
+        .screen>canvas {
+            width: var(--screen-width);
+            height: var(--screen-height);
+            border: 1px solid white;
+            background: var(--background);
+            /* cursor: none; */
+        }
+
+        .screen>.logo {
+            position: absolute;
+            z-index: 5;
+            opacity: 0;
+        }
