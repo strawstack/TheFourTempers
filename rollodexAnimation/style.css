@@ -1,0 +1,161 @@
+@import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;800&display=swap');
+
+:root {
+    --font: #8DF4FF;
+    --background: #024179;
+    --aberrarion: #0259a6;
+    --black: #333;
+
+    --screen-width: 1000px;
+    --screen-height: 750px;
+
+    --body-font-size: 1.5rem;
+
+    --rolo-scale: 1; /* animated from 0.5 to 1 */
+
+    --rolo-width: 250px;
+    --rolo-height: 360px;
+    
+    --rolo-card-gap: 10px;
+    --rolo-card-height: calc( (var(--rolo-height) - var(--rolo-card-gap)) / 2 );
+
+    --rolo-ring-width: 13px;
+    --rolo-ring-height: 62px; 
+    --rolo-ring-inset: 54px;
+    --rolo-top: calc( var(--rolo-card-height) + var(--rolo-card-gap) / 2 - var(--rolo-ring-height) / 2 );
+
+    --rolo-wheel-width: 30px;
+    --rolo-wheel-height: 135px;
+    --rolo-wheel-side-gap: 10px;
+    --rolo-rect-height: 10px;
+    --rolo-wheel-top: calc( 
+        var(--rolo-card-height) + var(--rolo-card-gap) / 2 - var(--rolo-wheel-height) / 2 
+    );
+
+    --rolo-tab-container-height: 36px;
+    --rolo-tab-side-gap: 5px;
+    --rolo-tab-width: calc( (var(--rolo-width) - 3 * var(--rolo-tab-side-gap)) / 4 );
+    --rolo-tab-left-offset: calc( var(--rolo-tab-side-gap) + var(--rolo-tab-width) );
+}
+
+html, body {
+    padding: 0px;
+    margin: 0px;
+    min-height: 100vh;
+}
+
+.screen-container {
+    background: var(--black);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+    .screen {
+        position: relative;
+        border: 1px solid white;
+        width: var(--screen-width);
+        height: var(--screen-height);
+
+        .rolodex-container {
+            position: absolute;
+            width: var(--rolo-width);
+            height: var(--rolo-height);
+            top: calc( (var(--screen-height) - var(--rolo-height)) / 2 );
+            left: calc( (var(--screen-width) - var(--rolo-width)) / 2 );
+            
+            transform: scale(var(--rolo-scale), var(--rolo-scale));
+
+            .sweep-line {
+
+            }
+
+            .top-card, .bot-card {
+                position: absolute;
+                width: var(--rolo-width);
+                height: var(--rolo-card-height);
+
+                background: grey;
+            }
+
+            .bot-card {
+                bottom: 0px;
+            }
+
+            .left-ring, .right-ring {
+                position: absolute;
+                top: var(--rolo-top);
+                width: var(--rolo-ring-width);
+                height: var(--rolo-ring-height);
+
+                background: blue;
+            }
+
+            .left-ring {
+                left: var(--rolo-ring-inset);
+            }
+
+            .right-ring {
+                right: var(--rolo-ring-inset);
+            }
+
+            .left-wheel, .right-wheel {
+                position: absolute;
+                top: var(--rolo-wheel-top);
+                width: var(--rolo-wheel-width);
+                height: var(--rolo-wheel-height);
+
+                background: lightcoral;
+            }
+
+            .left-wheel {
+                left: calc(-1 * (var(--rolo-wheel-width) + var(--rolo-wheel-side-gap)));
+            }
+
+            .right-wheel {
+                right: calc(-1 * (var(--rolo-wheel-width) + var(--rolo-wheel-side-gap)));
+            }
+
+            .top-tab-container, .bot-tab-container {
+
+                position: absolute;
+                width: var(--rolo-width);
+                height: var(--rolo-tab-container-height);
+
+                background: green;
+
+                .one, .two, .three, .four {
+                    position: absolute;
+                    height: var(--rolo-tab-container-height);
+                    width: var(--rolo-tab-width);
+
+                    background: gold;
+                }
+
+                .two {
+                    left: var(--rolo-tab-left-offset);
+                }
+
+                .three {
+                    left: calc( 2 * var(--rolo-tab-left-offset) );
+                }
+
+                .four {
+                    left: calc( 3 * var(--rolo-tab-left-offset) );
+                }
+            }
+
+            .top-tab-container {
+                top: calc( -1 * var(--rolo-tab-container-height) );
+                
+                .tab-letter {
+                    
+                }
+            }
+
+            .bot-tab-container {
+                bottom: calc( -1 * var(--rolo-tab-container-height) );
+            }
+        }
+    }
