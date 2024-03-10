@@ -52,6 +52,10 @@
         (var(--rolo-tab-container-width) - 3 * var(--rolo-tab-side-gap)) / 4 
     );
     --rolo-tab-left-offset: calc( var(--rolo-tab-side-gap) + var(--rolo-tab-width) );
+
+    --copy-bot-card-top: calc( 
+        var(--rolo-card-height) + var(--rolo-card-gap) + 2 * var(--rolo-border-width)
+    );
 }
 
 html, body {
@@ -112,12 +116,24 @@ body {
                 }
             }
 
+            .copy-top-card {
+                position: relative;
+                top: 0px;
+            }
+
             .bot-card, .copy-bot-card {
                 display: flex;
                 justify-content: center;
                 align-items: center;
+            }
 
+            .bot-card {
                 bottom: 0px;
+            }
+
+            .copy-bot-card {
+                position: absolute;
+                top: var(--copy-bot-card-top);
             }
 
             .left-ring, .right-ring {
