@@ -35,13 +35,15 @@
     --rolo-ring-top: calc( (var(--rolo-height) - var(--rolo-ring-height)) / 2 );
 
     --rolo-wheel-width: 30px;
-    --rolo-wheel-height: 135px;
+    --rolo-wheel-height: 134px;
     --rolo-wheel-side-gap: 10px;
     --rolo-rect-height: 10px;
     --rolo-wheel-top: calc( 
         var(--rolo-card-height) + 2 * var(--rolo-border-width) 
         + var(--rolo-card-gap) / 2 - var(--rolo-wheel-height) / 2 
     );
+
+    --rolo-pill-height: 10px;
 
     --rolo-tab-container-width: calc(
         var(--rolo-width) - 4 * var(--rolo-border-width)
@@ -158,7 +160,15 @@ body {
                 top: var(--rolo-wheel-top);
                 width: var(--rolo-wheel-width);
                 height: var(--rolo-wheel-height);
-                background: var(--font);
+                border-radius: 1px solid white;
+
+                .pill {
+                    position: absolute;
+                    background: var(--font);
+                    width: var(--rolo-wheel-width);
+                    height: var(--rolo-pill-height);
+                    border-radius: var(--rolo-border-radius);
+                }
             }
 
             .left-wheel {

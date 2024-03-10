@@ -76,8 +76,24 @@ function roloAnimation(names) {
         state.copyBotTabRef = document.querySelectorAll(
             ".copy-bot-card .bot-tab-container .tab"
         );
+
+        state.roloPillHeight = parseInt(getCssVar("--rolo-pill-height"), 10);
+        state.leftWheelRef = document.querySelector(".left-wheel");
+        state.rightWheelRef = document.querySelector(".right-wheel");
         
         state.cardDuration = 1 / names.length;
+
+        // Set up wheel pills
+        let prevPill = 0; // Leading edge of previous pill
+        state.pillsLeft = Array(10).fill(null).map((e, i) => {
+            const pill = makePill();
+            const pos = prevPill;
+            const gap = calcGap(prevPill);
+            prevPill = pos + gap + state.roloPillHeight;
+            pill.style.top = `${pos + gap}px`;
+            return pill;
+        });
+
 
         window.requestAnimationFrame(calculate);
 
@@ -113,6 +129,27 @@ function roloAnimation(names) {
             duration: 50000
         });
 
+    }
+
+    function calcGap(value) {
+        const maxPoint = 62;
+        const endVal = 124;
+        const slope = 6 / 62; // Slope of padding lookup before center
+        const diff = maxPoint - value;
+        if (diff >= 0) {
+            return slope * value; 
+
+        } else { // diff < 0
+            return (endVal - (value - maxPoint)) * slope;
+
+        }
+    }
+
+    function makePill() {
+        const pill = document.createElement("div");
+        pill.className = "pill";
+        state.leftWheelRef.appendChild(pill);
+        return pill;
     }
 
     // n is between 0 and 1
