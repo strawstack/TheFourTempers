@@ -132,7 +132,6 @@ function logoAnimation({ ctx, size }) {
         renderLine(state.botLine);
 
         renderRect(state.rect);
-
     }
 
     async function start() {

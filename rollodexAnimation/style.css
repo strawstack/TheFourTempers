@@ -11,30 +11,46 @@
 
     --body-font-size: 1.5rem;
 
-    --rolo-scale: 1; /* animated from 0.5 to 1 */
-
     --rolo-width: 250px;
     --rolo-height: 360px;
     
+    --rolo-scale: 0.4;
+    --rolo-opacity: 0;
+
+    --rolo-top: calc( (var(--screen-height) - var(--rolo-height)) / 2 );
+    --rolo-left: calc( (var(--screen-width) - var(--rolo-width)) / 2 );
+
+    --rolo-border-width: 6px;
+    --rolo-border-radius: 12px;
+
     --rolo-card-gap: 10px;
-    --rolo-card-height: calc( (var(--rolo-height) - var(--rolo-card-gap)) / 2 );
+    --rolo-card-width: calc( var(--rolo-width) - 2 * var(--rolo-border-width) );
+    --rolo-card-height: calc( 
+        (var(--rolo-height) - var(--rolo-card-gap) - 4 * var(--rolo-border-width)) / 2 
+    );
 
     --rolo-ring-width: 13px;
     --rolo-ring-height: 62px; 
     --rolo-ring-inset: 54px;
-    --rolo-top: calc( var(--rolo-card-height) + var(--rolo-card-gap) / 2 - var(--rolo-ring-height) / 2 );
+    --rolo-ring-top: calc( (var(--rolo-height) - var(--rolo-ring-height)) / 2 );
 
     --rolo-wheel-width: 30px;
     --rolo-wheel-height: 135px;
     --rolo-wheel-side-gap: 10px;
     --rolo-rect-height: 10px;
     --rolo-wheel-top: calc( 
-        var(--rolo-card-height) + var(--rolo-card-gap) / 2 - var(--rolo-wheel-height) / 2 
+        var(--rolo-card-height) + 2 * var(--rolo-border-width) 
+        + var(--rolo-card-gap) / 2 - var(--rolo-wheel-height) / 2 
     );
 
+    --rolo-tab-container-width: calc(
+        var(--rolo-width) - 4 * var(--rolo-border-width)
+    ); /* 4 because tabs hang without extra width padding */
     --rolo-tab-container-height: 36px;
     --rolo-tab-side-gap: 5px;
-    --rolo-tab-width: calc( (var(--rolo-width) - 3 * var(--rolo-tab-side-gap)) / 4 );
+    --rolo-tab-width: calc( 
+        (var(--rolo-tab-container-width) - 3 * var(--rolo-tab-side-gap)) / 4 
+    );
     --rolo-tab-left-offset: calc( var(--rolo-tab-side-gap) + var(--rolo-tab-width) );
 }
 
@@ -42,6 +58,12 @@ html, body {
     padding: 0px;
     margin: 0px;
     min-height: 100vh;
+}
+
+body {
+    font-family: "M PLUS Rounded 1c", sans-serif;
+    font-style: normal;
+    font-weight: 800;
 }
 
 .screen-container {
@@ -57,39 +79,54 @@ html, body {
         border: 1px solid white;
         width: var(--screen-width);
         height: var(--screen-height);
+        background: var(--background);
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
 
         .rolodex-container {
-            position: absolute;
+            position: relative;
             width: var(--rolo-width);
             height: var(--rolo-height);
-            top: calc( (var(--screen-height) - var(--rolo-height)) / 2 );
-            left: calc( (var(--screen-width) - var(--rolo-width)) / 2 );
-            
             transform: scale(var(--rolo-scale), var(--rolo-scale));
+            opacity: var(--rolo-opacity);
 
-            .sweep-line {
-
-            }
-
-            .top-card, .bot-card {
+            .top-card, .copy-top-card, .bot-card, .copy-bot-card {
                 position: absolute;
-                width: var(--rolo-width);
+                width: var(--rolo-card-width);
                 height: var(--rolo-card-height);
-
-                background: grey;
+                border: var(--rolo-border-width) solid var(--font);
+                border-radius: var(--rolo-border-radius);
+                background: var(--background);
             }
 
-            .bot-card {
+            .top-card, .copy-top-card {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                
+                .card-name {
+                    color: var(--font);
+                    font-size: 2rem;
+                }
+            }
+
+            .bot-card, .copy-bot-card {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+
                 bottom: 0px;
             }
 
             .left-ring, .right-ring {
                 position: absolute;
-                top: var(--rolo-top);
+                top: var(--rolo-ring-top);
                 width: var(--rolo-ring-width);
                 height: var(--rolo-ring-height);
-
-                background: blue;
+                background: var(--font);
+                border-radius: var(--rolo-border-radius);
             }
 
             .left-ring {
@@ -105,8 +142,7 @@ html, body {
                 top: var(--rolo-wheel-top);
                 width: var(--rolo-wheel-width);
                 height: var(--rolo-wheel-height);
-
-                background: lightcoral;
+                background: var(--font);
             }
 
             .left-wheel {
@@ -120,17 +156,14 @@ html, body {
             .top-tab-container, .bot-tab-container {
 
                 position: absolute;
-                width: var(--rolo-width);
+                width: var(--rolo-tab-container-width);
                 height: var(--rolo-tab-container-height);
-
-                background: green;
 
                 .one, .two, .three, .four {
                     position: absolute;
                     height: var(--rolo-tab-container-height);
                     width: var(--rolo-tab-width);
-
-                    background: gold;
+                    background: var(--font);
                 }
 
                 .two {
@@ -147,15 +180,29 @@ html, body {
             }
 
             .top-tab-container {
-                top: calc( -1 * var(--rolo-tab-container-height) );
+                top: calc( -1 * (var(--rolo-tab-container-height) + var(--rolo-border-width)) );
                 
+                .one, .two, .three, .four {
+                    border-top-left-radius: calc( var(--rolo-border-radius) / 2 );
+                    border-top-right-radius: calc( var(--rolo-border-radius) / 2 );
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                }
+
                 .tab-letter {
-                    
+                    color: var(--background);
+                    font-size: 1.4rem;
                 }
             }
 
             .bot-tab-container {
-                bottom: calc( -1 * var(--rolo-tab-container-height) );
+                bottom: calc( -1 * (var(--rolo-tab-container-height) + var(--rolo-border-width)) );
+
+                .one, .two, .three, .four {
+                    border-bottom-left-radius: calc( var(--rolo-border-radius) / 2 );
+                    border-bottom-right-radius: calc( var(--rolo-border-radius) / 2 );
+                }
             }
         }
     }

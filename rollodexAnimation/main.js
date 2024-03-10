@@ -1,10 +1,6 @@
 (() => {
 
-    function getCssVar(name) {
-        return window.getComputedStyle(document.body).getPropertyValue(name);
-    }
-
-    async function main() {
+    function main() {
 
         const { start } = roloAnimation(getNames());
 
@@ -22,32 +18,32 @@
 
     function getNames() {
         return [
-            'Arroyo', 'Askoy', null,
-            'Beynac', 'Burbague', null,
-            'Castelluccio', 'Cefalu', null,
-            'Drainsville', null,
-            'Estes', 'Eltville', 'Ennis', null,
-            'Fjaerland', 'Fowey', null,
-            'Giethoorn', 'Glencoe', 'Grindelwald', null,
-            'Hanauma', 'Hahndorf', null,
-            'Inishmore', 'Interlaken', null,
-            'Jessup', null,
-            'Kingsport', null,
-            'Labrador', 'Le Mars', 'Longbranch', null,
-            'Minsk', 'Moonbeam', null,
-            'Nanning', 'Narva', null,
-            'Ocula', null, 
-            'Pacolma', null,
-            'Qaqortoq', 'Quinhamel', null,
-            'Rosscarbery', 'Richard', null,
-            'Stellenbosch', 'Sedona', null,
-            'Tumwater', null,
-            'Ushuaia', null,
-            'Victoria', 'Veurne', 'Vik', null,
-            'Wanaka', 'Whitby', null,
-            'Xaghra', null,
-            'Yu', 'Yungay', null,
-            'Zermatt', 'Zellamsee'
+            {tab: 'A'}, 'Arroyo', 'Askoy',
+            {tab: 'B'}, 'Beynac', 'Burbague',
+            {tab: 'C'}, 'Castelluccio', 'Cefalu',
+            {tab: 'D'}, 'Drainsville',
+            {tab: 'E'}, 'Eltville', 'Ennis', 'Estes',
+            {tab: 'F'}, 'Fjaerland', 'Fowey',
+            {tab: 'G'}, 'Giethoorn', 'Glencoe', 'Grindelwald',
+            {tab: 'H'}, 'Hanauma', 'Hahndorf',
+            {tab: 'I'}, 'Inishmore', 'Interlaken',
+            {tab: 'J'}, 'Jessup',
+            {tab: 'K'}, 'Kingsport',
+            {tab: 'L'}, 'Labrador', 'Le Mars', 'Longbranch',
+            {tab: 'M'}, 'Minsk', 'Moonbeam',
+            {tab: 'N'}, 'Nanning', 'Narva',
+            {tab: 'O'}, 'Ocula', 
+            {tab: 'P'}, 'Pacolma',
+            {tab: 'Q'}, 'Qaqortoq', 'Quinhamel',
+            {tab: 'R'}, 'Richard', 'Rosscarbery',
+            {tab: 'S'}, 'Sedona', 'Siena', 'Stellenbosch', 
+            {tab: 'T'}, 'Tumwater',
+            {tab: 'U'}, 'Ushuaia',
+            {tab: 'V'}, 'Veurne', 'Victoria', 'Vik',
+            {tab: 'W'}, 'Wanaka', 'Whitby',
+            {tab: 'X'}, 'Xaghra',
+            {tab: 'Y'}, 'Yu', 'Yungay',
+            {tab: 'Z'}, 'Zellamsee', 'Zermatt'
         ];
     }
     
