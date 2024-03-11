@@ -35,7 +35,7 @@
     --rolo-ring-top: calc( (var(--rolo-height) - var(--rolo-ring-height)) / 2 );
 
     --rolo-wheel-width: 30px;
-    --rolo-wheel-height: 134px;
+    --rolo-wheel-height: 135px;
     --rolo-wheel-side-gap: 10px;
     --rolo-rect-height: 10px;
     --rolo-wheel-top: calc( 

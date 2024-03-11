@@ -29,7 +29,7 @@ function roloAnimation(names) {
 
     }
 
-    function start() {
+    async function start() {
         
         state.screenWidth = parseInt(getCssVar("--screen-width"), 10);
         state.screenHeight = parseInt(getCssVar("--screen-height"), 10);
@@ -49,6 +49,8 @@ function roloAnimation(names) {
             document.querySelector(".copy-bot-card"), 
             "top"
         ), 10);
+
+        state.pillCount = 10;
 
         state.tabContainerHeight = parseInt(getCssVar("--rolo-tab-container-height"));
 
@@ -77,6 +79,7 @@ function roloAnimation(names) {
             ".copy-bot-card .bot-tab-container .tab"
         );
 
+        state.roloWheelHeight = parseInt(getCssVar("--rolo-wheel-height"), 10);
         state.roloPillHeight = parseInt(getCssVar("--rolo-pill-height"), 10);
         state.leftWheelRef = document.querySelector(".left-wheel");
         state.rightWheelRef = document.querySelector(".right-wheel");
@@ -84,16 +87,15 @@ function roloAnimation(names) {
         state.cardDuration = 1 / names.length;
 
         // Set up wheel pills
-        let prevPill = 0; // Leading edge of previous pill
-        state.pillsLeft = Array(10).fill(null).map((e, i) => {
-            const pill = makePill();
-            const pos = prevPill;
-            const gap = calcGap(prevPill);
-            prevPill = pos + gap + state.roloPillHeight;
-            pill.style.top = `${pos + gap}px`;
+        state.pillsLeft = Array(state.pillCount).fill(null).map((e, i) => {
+            const pill = makePill(state.leftWheelRef);            
             return pill;
         });
 
+        state.pillsRight = Array(state.pillCount).fill(null).map((e, i) => {
+            const pill = makePill(state.rightWheelRef);            
+            return pill;
+        });
 
         window.requestAnimationFrame(calculate);
 
@@ -120,35 +122,66 @@ function roloAnimation(names) {
         state.roloContainerRef.style.transform = `scale(${1}, ${1})`;
         state.roloContainerRef.style.opacity = 1;
 
-        animation("flip", {
+        let turnContinue = true;
+        const turnLeft = async duration => {
+            const slice = Math.PI / state.pillCount;
+            await animation("leftWheel", {
+                from: 0,
+                to: slice,
+                action: n => {
+                    if (turnContinue) {
+                        setPillsWithOffset(state.pillsLeft, slice, n);
+                    }
+                },
+                duration
+            });
+            if (turnContinue) turnLeft(duration);
+        };
+
+        const turnRight = async duration => {
+            const slice = Math.PI / state.pillCount;
+            await animation("rightWheel", {
+                from: 0,
+                to: slice,
+                action: n => {
+                    if (turnContinue) {
+                        setPillsWithOffset(state.pillsRight, slice, n);
+                    }
+                },
+                duration
+            });
+            if (turnContinue) turnRight(duration);
+        };
+
+        turnLeft(2000);
+        turnRight(2000);
+
+        await animation("flip", {
             from: 0,
             to: 1,
             action: n => {
                 flip(n);
             },
-            duration: 50000
+            duration: 30000
         });
 
+        turnContinue = false;
+
     }
 
-    function calcGap(value) {
-        const maxPoint = 62;
-        const endVal = 124;
-        const slope = 6 / 62; // Slope of padding lookup before center
-        const diff = maxPoint - value;
-        if (diff >= 0) {
-            return slope * value; 
-
-        } else { // diff < 0
-            return (endVal - (value - maxPoint)) * slope;
-
-        }
+    function setPillsWithOffset(pills, slice, offset) {
+        pills.forEach((pill, i) => {
+            const rad = (state.roloWheelHeight - state.roloPillHeight) / 2;
+            const x =  rad * Math.cos((i + 1) * slice + offset);
+            const pos = -1 * x + rad;
+            pill.style.top = `${pos}px`;
+        });
     }
 
-    function makePill() {
+    function makePill(parentRef) {
         const pill = document.createElement("div");
         pill.className = "pill";
-        state.leftWheelRef.appendChild(pill);
+        parentRef.appendChild(pill);
         return pill;
     }
 
