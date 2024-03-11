@@ -1,13 +1,16 @@
-(() => {
+function logo() {
 
     function getCssVar(name) {
         return window.getComputedStyle(document.body).getPropertyValue(name);
     }
 
-    async function main() {
+    async function start() {
+
+        const screen = document.querySelector(".logo-screen");
+        screen.style.removeProperty("display");
 
         // Canvas
-        const canvas = document.querySelector(".screen>canvas");
+        const canvas = document.querySelector(".logo-screen>.logocanvas");
 
         const scale = window.devicePixelRatio;
         canvas.width = Math.floor(scale * parseInt(getCssVar("--screen-width"), 10));
@@ -23,16 +26,11 @@
 
         await start();
 
-        console.log("done");
-
+        return null; // back to global main
     }
 
-    let once = false;
-    document.fonts.onloadingdone = () => {
-        if (!once) {
-            once = true;
-            main();
-        }
+    return {
+        start
     };
     
-})();
+}

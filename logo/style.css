@@ -1,0 +1,17 @@
+.logo-screen {
+    position: relative;
+    top: calc(-1 * var(--screen-height) / 2);
+}
+
+    .logo-screen>.logocanvas {
+        width: var(--screen-width);
+        height: var(--screen-height);
+        background: var(--background);
+        /* cursor: none; */
+    }
+
+    .logo-screen>.logo {
+        position: absolute;
+        z-index: 5;
+        opacity: 0;
+    }

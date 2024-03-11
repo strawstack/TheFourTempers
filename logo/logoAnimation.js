@@ -95,7 +95,7 @@ function logoAnimation({ ctx, size }) {
         opacity: 0
     };
 
-    state.logoRef = document.querySelector(".screen>.logo");
+    state.logoRef = document.querySelector(".logo-screen>.logo");
     state.maskRef = document.querySelectorAll(".mask");
     state.dropRef = document.querySelector(".drop");
 

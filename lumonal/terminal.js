@@ -1,4 +1,4 @@
-function terminal({ canvas: canvasElement, ctx, ta: textarea }) {
+function terminal({ canvas: canvasElement, ctx, ta: textarea, resolve }) {
     const { write: textAreaWrite, draw, size } = textarea;
 
     function getCssVar(name) {
@@ -12,7 +12,7 @@ function terminal({ canvas: canvasElement, ctx, ta: textarea }) {
 
     const color = {
         cursor: "rgba(255, 255, 255, 0.25)", // white translucent
-        clear: getCssVar("--black")
+        clear: getCssVar("--background")
     };
 
     let cmd_index = 0;
@@ -290,7 +290,6 @@ function terminal({ canvas: canvasElement, ctx, ta: textarea }) {
             wipeCursor();
             setCursor(saveCursor.row, saveCursor.col);
         }
-        console.log(cmd)
     };
 
     const eraseCommand = () => {
@@ -410,8 +409,7 @@ function terminal({ canvas: canvasElement, ctx, ta: textarea }) {
             if (cmd_index > 0) cmd[0] = cmd[cmd_index]; // log command from prev memory
 
             if (macrodataMode) {
-                console.log(`Filename: ${strCmd}`);
-                console.log("Launching TheFourTempers app...");
+                resolve(strCmd);
                 return;
             }
 
@@ -420,8 +418,6 @@ function terminal({ canvas: canvasElement, ctx, ta: textarea }) {
             cmd_index = 0;
             if (strCmd !== "") cmd.unshift([]);
             
-            console.log(cmd)
-
             // Ex: vim returns 'null' because it has
             // already taken over the canvas
             if (result === null) return;
