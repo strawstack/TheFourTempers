@@ -31,6 +31,17 @@ function roloAnimation(names) {
 
     async function start() {
         
+        state.targetIndex = names.indexOf('Siena');
+        const preSize = 27; 
+        state.startIndex = Math.max(0, state.targetIndex - preSize);
+
+        state.flipSpeedPerCard = 400;
+        state.cardDuration = 1 / names.length;
+        
+        state.flipStartPercent = state.startIndex * state.cardDuration;
+        state.flipEndPercent = state.targetIndex * state.cardDuration;
+        state.flipDuration = (state.targetIndex - state.startIndex) * state.flipSpeedPerCard;
+
         state.screenWidth = parseInt(getCssVar("--screen-width"), 10);
         state.screenHeight = parseInt(getCssVar("--screen-height"), 10);
         
@@ -84,8 +95,6 @@ function roloAnimation(names) {
         state.leftWheelRef = document.querySelector(".left-wheel");
         state.rightWheelRef = document.querySelector(".right-wheel");
         
-        state.cardDuration = 1 / names.length;
-
         // Set up wheel pills
         state.pillsLeft = Array(state.pillCount).fill(null).map((e, i) => {
             const pill = makePill(state.leftWheelRef);            
@@ -99,14 +108,17 @@ function roloAnimation(names) {
 
         window.requestAnimationFrame(calculate);
 
-        /*
         animation("zoom", {
             from: state.roloScale,
             to: 1,
             action: scale => {
-                state.roloContainerRef.style.transform = `scale(${scale}, ${scale})`;
+                const convert = 1 / (1 - state.roloScale);
+                const easeOutScale = easeOutExpo(
+                    (scale - state.roloScale) * convert
+                ) / convert + state.roloScale;
+                state.roloContainerRef.style.transform = `scale(${easeOutScale}, ${easeOutScale})`;
             },
-            duration: 6000
+            duration: state.flipDuration
         });
 
         animation("opacity", {
@@ -115,12 +127,8 @@ function roloAnimation(names) {
             action: opacity => {
                 state.roloContainerRef.style.opacity = opacity;
             },
-            duration: 4000
-        }); */
-
-        // dev
-        state.roloContainerRef.style.transform = `scale(${1}, ${1})`;
-        state.roloContainerRef.style.opacity = 1;
+            duration: state.flipDuration / 4
+        });
 
         let turnContinue = true;
         const turnLeft = async duration => {
@@ -153,16 +161,21 @@ function roloAnimation(names) {
             if (turnContinue) turnRight(duration);
         };
 
-        turnLeft(2000);
-        turnRight(2000);
+        turnLeft(state.cardDuration * state.flipDuration);
+        turnRight(state.cardDuration * state.flipDuration);
 
         await animation("flip", {
-            from: 0,
-            to: 1,
+            from: state.flipStartPercent,
+            to: state.flipEndPercent,
             action: n => {
+                /*
+                const convert = 1 / (state.flipEndPercent - state.flipStartPercent);
+                const easeN = easeOutExpo(
+                    (n - state.flipStartPercent) * convert
+                ) / convert + state.flipStartPercent; */
                 flip(n);
             },
-            duration: 30000
+            duration: state.flipDuration
         });
 
         turnContinue = false;
@@ -188,13 +201,15 @@ function roloAnimation(names) {
     // n is between 0 and 1
     // Show the correct flip progress
     function flip(n) {
-
         const cardValue = n / state.cardDuration;
-        const cardIndex = Math.min(names.length - 1, Math.floor(cardValue));
+        const cardIndex = Math.floor(cardValue);
+
+        if (names.length - 1 < cardIndex) return;
+
         const tabCardPriorCount = names.slice(0, cardIndex).reduce((a, c) => {
             return a + ((typeof(c) !== "string") ? 1 : 0);
         }, 0);
-                
+
         const baseTabOffset = 2;  
         const topTabIndex = (baseTabOffset + tabCardPriorCount) % 4;
                 
@@ -215,12 +230,16 @@ function roloAnimation(names) {
         const cardData = names[cardIndex];
         state.copyTopCardCardNameRef.innerHTML = (typeof(cardData) !== "string") ? "" : cardData;
 
-        // Set next filename
-        if (cardIndex + 1 < names.length) {
-            const nextCardData = names[cardIndex + 1];
-            state.topCardCardNameRef.innerHTML = (typeof(nextCardData) !== "string") ? "" : nextCardData;
+        if (cardIndex === names.length -1) {
+            state.topCardCardNameRef.innerHTML = "";
+
+        } else {
+            // Set next filename
+            if (cardIndex + 1 < names.length) {
+                const nextCardData = names[cardIndex + 1];
+                state.topCardCardNameRef.innerHTML = (typeof(nextCardData) !== "string") ? "" : nextCardData;
+            }
         }
-        
     }
 
     function lowerPrevTabs(cardIndex, botTabIndex, cardProgress) {
@@ -327,6 +346,10 @@ function roloAnimation(names) {
 
             tab.innerHTML = cardData.tab;
         }
+    }
+
+    function easeOutQuad(x) {
+        return 1 - (1 - x) * (1 - x);    
     }
 
     function easeOutExpo(x) {
