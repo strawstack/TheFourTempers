@@ -1,0 +1,152 @@
+.rolodex-screen {
+    position: absolute;
+    border: 1px solid white;
+    width: var(--screen-width);
+    height: var(--screen-height);
+    background: var(--background);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .rolodex-container {
+        position: relative;
+        width: var(--rolo-width);
+        height: var(--rolo-height);
+        transform: scale(var(--rolo-scale), var(--rolo-scale));
+        opacity: var(--rolo-opacity);
+
+        .top-card, .copy-top-card, .bot-card, .copy-bot-card {
+            position: absolute;
+            width: var(--rolo-card-width);
+            height: var(--rolo-card-height);
+            border: var(--rolo-border-width) solid var(--font);
+            border-radius: var(--rolo-border-radius);
+            background: var(--background);
+        }
+
+        .top-card, .copy-top-card {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            
+            .card-name {
+                color: var(--font);
+                font-size: 2rem;
+            }
+        }
+
+        .copy-top-card {
+            position: relative;
+            top: 0px;
+        }
+
+        .bot-card, .copy-bot-card {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .bot-card {
+            bottom: 0px;
+        }
+
+        .copy-bot-card {
+            position: absolute;
+            top: var(--copy-bot-card-top);
+        }
+
+        .left-ring, .right-ring {
+            position: absolute;
+            top: var(--rolo-ring-top);
+            width: var(--rolo-ring-width);
+            height: var(--rolo-ring-height);
+            background: var(--font);
+            border-radius: var(--rolo-border-radius);
+        }
+
+        .left-ring {
+            left: var(--rolo-ring-inset);
+        }
+
+        .right-ring {
+            right: var(--rolo-ring-inset);
+        }
+
+        .left-wheel, .right-wheel {
+            position: absolute;
+            top: var(--rolo-wheel-top);
+            width: var(--rolo-wheel-width);
+            height: var(--rolo-wheel-height);
+            border-radius: 1px solid white;
+
+            .pill {
+                position: absolute;
+                background: var(--font);
+                width: var(--rolo-wheel-width);
+                height: var(--rolo-pill-height);
+                border-radius: var(--rolo-border-radius);
+            }
+        }
+
+        .left-wheel {
+            left: calc(-1 * (var(--rolo-wheel-width) + var(--rolo-wheel-side-gap)));
+        }
+
+        .right-wheel {
+            right: calc(-1 * (var(--rolo-wheel-width) + var(--rolo-wheel-side-gap)));
+        }
+
+        .top-tab-container, .bot-tab-container {
+
+            position: absolute;
+            width: var(--rolo-tab-container-width);
+            height: var(--rolo-tab-container-height);
+
+            .one, .two, .three, .four {
+                position: absolute;
+                height: var(--rolo-tab-container-height);
+                width: var(--rolo-tab-width);
+                background: var(--font);
+            }
+
+            .two {
+                left: var(--rolo-tab-left-offset);
+            }
+
+            .three {
+                left: calc( 2 * var(--rolo-tab-left-offset) );
+            }
+
+            .four {
+                left: calc( 3 * var(--rolo-tab-left-offset) );
+            }
+        }
+
+        .top-tab-container {
+            top: calc( -1 * (var(--rolo-tab-container-height) + var(--rolo-border-width)) );
+            
+            .one, .two, .three, .four {
+                border-top-left-radius: calc( var(--rolo-border-radius) / 2 );
+                border-top-right-radius: calc( var(--rolo-border-radius) / 2 );
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .tab-letter {
+                color: var(--background);
+                font-size: 1.4rem;
+            }
+        }
+
+        .bot-tab-container {
+            bottom: calc( -1 * (var(--rolo-tab-container-height) + var(--rolo-border-width)) );
+
+            .one, .two, .three, .four {
+                border-bottom-left-radius: calc( var(--rolo-border-radius) / 2 );
+                border-bottom-right-radius: calc( var(--rolo-border-radius) / 2 );
+            }
+        }
+    }
+}

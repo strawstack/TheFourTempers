@@ -25,7 +25,12 @@ function lumonal() {
             const ta = textarea({ canvas, ctx });
 
             // Terminal
-            const ter = terminal({ canvas, ctx, ta, resolve: res });
+            const ter = terminal({ canvas, ctx, ta, 
+                resolve: filename => {
+                    canvas.style.display = 'none';
+                    res(filename);
+                }
+            });
 
             // Bash
             bash({ fs, ter });

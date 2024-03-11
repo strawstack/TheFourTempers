@@ -1,23 +1,16 @@
-(() => {
+function rolodex(filename) {
 
-    function main() {
-
-        const { start } = roloAnimation(getNames());
-
-        start();
+    async function start() {
+        
+        return new Promise((resolveFilename, rej) => {
+            const { start: animStart } = roloAnimation(getNames(filename), () => resolveFilename(filename));
+            animStart();
+        });
 
     }
 
-    let once = false;
-    document.fonts.onloadingdone = () => {
-        if (!once) {
-            once = true;
-            main();
-        }
-    };
-
-    function getNames() {
-        return [
+    function getNames(filename) {
+        const names = [
             {tab: 'A'}, 'Arroyo', 'Askoy',
             {tab: 'B'}, 'Beynac', 'Burbague',
             {tab: 'C'}, 'Castelluccio', 'Cefalu',
@@ -45,6 +38,14 @@
             {tab: 'Y'}, 'Yu', 'Yungay',
             {tab: 'Z'}, 'Zellamsee', 'Zermatt'
         ];
+
+        // TODO: insert `filename` into names
+
+        return names;
     }
     
-})();
+    return {
+        start
+    };
+
+}

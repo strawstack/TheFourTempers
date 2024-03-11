@@ -6,9 +6,10 @@
         await logoStart();
 
         const { start: startLumonal } = lumonal();
-        const filename = await startLumonal();
+        const roloFilename = await startLumonal();
 
-        
+        const { start: roloStart } = rolodex(roloFilename);
+        const filename = await roloStart();
 
         const { start: startTempers } = tempers();
         startTempers(filename);

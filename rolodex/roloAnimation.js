@@ -1,4 +1,4 @@
-function roloAnimation(names) {
+function roloAnimation(names, resolveFilename) {
 
     const state = {};
     const animations = {};
@@ -31,6 +31,9 @@ function roloAnimation(names) {
 
     async function start() {
         
+        state.roloScreen = document.querySelector(".rolodex-screen");
+        state.roloScreen.style.removeProperty("display");
+
         state.targetIndex = names.indexOf('Siena');
         const preSize = 27; 
         state.startIndex = Math.max(0, state.targetIndex - preSize);
@@ -179,6 +182,10 @@ function roloAnimation(names) {
         });
 
         turnContinue = false;
+
+        // TODO: replace with click event on filename
+        resolveFilename();
+        state.roloScreen.style.display = 'none';
 
     }
 

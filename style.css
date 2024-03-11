@@ -28,6 +28,55 @@
     --bin-inner-pad: 20px;
 
     --bin-fill-1: 50px; /* 150px max */
+
+    /* Rolodex */
+    --rolo-width: 250px;
+    --rolo-height: 360px;
+    
+    --rolo-scale: 0.4;
+    --rolo-opacity: 0;
+
+    --rolo-top: calc( (var(--screen-height) - var(--rolo-height)) / 2 );
+    --rolo-left: calc( (var(--screen-width) - var(--rolo-width)) / 2 );
+
+    --rolo-border-width: 6px;
+    --rolo-border-radius: 12px;
+
+    --rolo-card-gap: 10px;
+    --rolo-card-width: calc( var(--rolo-width) - 2 * var(--rolo-border-width) );
+    --rolo-card-height: calc( 
+        (var(--rolo-height) - var(--rolo-card-gap) - 4 * var(--rolo-border-width)) / 2 
+    );
+
+    --rolo-ring-width: 13px;
+    --rolo-ring-height: 62px; 
+    --rolo-ring-inset: 54px;
+    --rolo-ring-top: calc( (var(--rolo-height) - var(--rolo-ring-height)) / 2 );
+
+    --rolo-wheel-width: 30px;
+    --rolo-wheel-height: 135px;
+    --rolo-wheel-side-gap: 10px;
+    --rolo-rect-height: 10px;
+    --rolo-wheel-top: calc( 
+        var(--rolo-card-height) + 2 * var(--rolo-border-width) 
+        + var(--rolo-card-gap) / 2 - var(--rolo-wheel-height) / 2 
+    );
+
+    --rolo-pill-height: 10px;
+
+    --rolo-tab-container-width: calc(
+        var(--rolo-width) - 4 * var(--rolo-border-width)
+    ); /* 4 because tabs hang without extra width padding */
+    --rolo-tab-container-height: 36px;
+    --rolo-tab-side-gap: 5px;
+    --rolo-tab-width: calc( 
+        (var(--rolo-tab-container-width) - 3 * var(--rolo-tab-side-gap)) / 4 
+    );
+    --rolo-tab-left-offset: calc( var(--rolo-tab-side-gap) + var(--rolo-tab-width) );
+
+    --copy-bot-card-top: calc( 
+        var(--rolo-card-height) + var(--rolo-card-gap) + 2 * var(--rolo-border-width)
+    );
 }
 
 html, body {
