@@ -290,6 +290,7 @@ function terminal({ canvas: canvasElement, ctx, ta: textarea }) {
             wipeCursor();
             setCursor(saveCursor.row, saveCursor.col);
         }
+        console.log(cmd)
     };
 
     const eraseCommand = () => {
@@ -406,6 +407,7 @@ function terminal({ canvas: canvasElement, ctx, ta: textarea }) {
 
         if (keyCode === ENTER) {
             const strCmd = cmd[cmd_index].join("");
+            if (cmd_index > 0) cmd[0] = cmd[cmd_index]; // log command from prev memory
 
             if (macrodataMode) {
                 console.log(`Filename: ${strCmd}`);
@@ -417,6 +419,8 @@ function terminal({ canvas: canvasElement, ctx, ta: textarea }) {
 
             cmd_index = 0;
             if (strCmd !== "") cmd.unshift([]);
+            
+            console.log(cmd)
 
             // Ex: vim returns 'null' because it has
             // already taken over the canvas
