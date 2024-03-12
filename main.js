@@ -1,4 +1,4 @@
-(() => {
+(async () => {
 
     async function main() {
         
@@ -19,13 +19,7 @@
 
     }
 
-    
-    let once = false;
-    document.fonts.onloadingdone = () => {
-        if (!once) {
-            once = true;
-            main();
-        }
-    };
+    await document.fonts.ready;
+    main();
 
 })();
