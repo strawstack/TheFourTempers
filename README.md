@@ -2,23 +2,25 @@
 
 # Todo
 
-- [ ] Create boot animation
-    - Lines of text animate on screen
-    - Logo is shown
-- [ ] Show "macrodata" command after boot animation
-- [ ] Create rollodex animation
-- [ ] Show rollodex animation after filename is entered
-    - Allow click on rollodex
-- [ ] Launch TheFourTempers app from rollodex
-    - Top and bottom bars fade in 0.2s
-    - Then digits animate in with opacity
-- [ ] On initial launch, hold off on drawing anything until font is ready. Fade in all UI quickly, then fade in digits.
-    - Consider freazing inputs until app is ready
+- [ ] Rollodex insert custom filename
+    - [ ] Pause rollodex animation on target file and offer click
 - [ ] Have numbers flash (any flourecent color) if they are special, are about to move, and above a certian size.
     - This will increase the value of making numbers large when they are suspicious
 - [ ] Make zoom animated and follow mouse cursor
 - [ ] 100% Completion congragulations screen
+- [ ] Fix hang bug due to many render functions
 
+- [x] Create boot animation
+    - Lines of text animate on screen
+    - Logo is shown
+- [x] Show "macrodata" command directly after boot animation
+- [x] Show rollodex animation after filename is entered
+    - Allow click on rollodex
+- [x] Launch TheFourTempers app from rollodex
+    - Top and bottom bars fade in 0.2s
+    - Then digits animate in with opacity
+- [x] On initial launch, hold off on drawing anything until font is ready. Fade in all UI quickly, then fade in digits.
+    - Consider freazing inputs until app is ready
 - [x] File location in bottom bar
 - [x] UI in top bar
     - [x] Track global progress in top bar
@@ -55,9 +57,11 @@
 
 # Bugs
 
+- [ ] App hangs after some time on tempers screen because render functions are never cancelled after being invoked
 - [ ] Font loading event not called in Chrome causes blank screen on load. 
     - See: https://developer.mozilla.org/en-US/docs/Web/API/FontFaceSet/loading_event 
 - [ ] Digits remain "excited" after correct submission.
+
 - [x] Number could animate visually into the box if they were children of `screen` instead of `digitContainer`
     - But the math for their position will have to be reworked for this to happen.
     - Fix: The height of the top_bot_section needs to be subtracted from the digitContainer top offset .

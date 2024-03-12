@@ -1,4 +1,4 @@
-function terminal({ canvas: canvasElement, ctx, ta: textarea, resolve }) {
+function terminal({ canvas: canvasElement, ctx, ta: textarea, macrodataModeInit, resolve }) {
     const { write: textAreaWrite, draw, size } = textarea;
 
     function getCssVar(name) {
@@ -18,9 +18,9 @@ function terminal({ canvas: canvasElement, ctx, ta: textarea, resolve }) {
     let cmd_index = 0;
     const cmd = [[]]; // Array of arrays of commands
 
-    let path = "/";
+    let macrodataMode = macrodataModeInit;
 
-    let macrodataMode = false;
+    let path = (macrodataMode) ? "/secret/lumon/severed" : "/";
 
     // Set inside writePrompt
     const cmdStart = {
@@ -567,7 +567,12 @@ function terminal({ canvas: canvasElement, ctx, ta: textarea, resolve }) {
     };
 
     const init = () => {
-        writePrompt();
+        if (macrodataMode) {
+            commands["macrodata"].call();
+
+        } else {
+            writePrompt();
+        }
     };
     init();
 

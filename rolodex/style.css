@@ -1,6 +1,5 @@
 .rolodex-screen {
     position: absolute;
-    border: 1px solid white;
     width: var(--screen-width);
     height: var(--screen-height);
     background: var(--background);
@@ -78,7 +77,6 @@
             top: var(--rolo-wheel-top);
             width: var(--rolo-wheel-width);
             height: var(--rolo-wheel-height);
-            border-radius: 1px solid white;
 
             .pill {
                 position: absolute;

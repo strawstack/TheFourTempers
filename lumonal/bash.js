@@ -1,4 +1,4 @@
-function bash({ fs: filesystem, ter: terminal }) {
+function bash({ fs: filesystem, ter: terminal, macrodataModeInit }) {
     const { onCommand, onAutoCompleteRequest, setPath } = terminal;
     const {
         read,
@@ -9,7 +9,7 @@ function bash({ fs: filesystem, ter: terminal }) {
         parsePath
     } = filesystem;
 
-    let path = ['/'];
+    let path =  (macrodataModeInit) ? ['/', 'secret', 'lumon', 'severed'] : ['/'];
 
     const ERROR_RESPONSE = {data: "Missing file or directory."};
 
