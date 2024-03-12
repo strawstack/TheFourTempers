@@ -123,6 +123,8 @@ function tempers() {
 
     async function start(filename) {
 
+        state.screen.style.removeProperty("display");
+
         state.FILENAME = filename;
         const hash = Array(16).fill(null).map((e, i) => CryptoJS.SHA256(`${state.FILENAME}${i}`).toString()).join(""); // 16 *  64 is over 1000
         state.getRandom = randomFactory(hash);

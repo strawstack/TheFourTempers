@@ -3,7 +3,7 @@ function rolodex(filename) {
     async function start() {
         
         return new Promise((resolveFilename, rej) => {
-            const { start: animStart } = roloAnimation(getNames(filename), () => resolveFilename(filename));
+            const { start: animStart } = roloAnimation(getNames(filename), filename, () => resolveFilename(filename));
             animStart();
         });
 
@@ -39,7 +39,24 @@ function rolodex(filename) {
             {tab: 'Z'}, 'Zellamsee', 'Zermatt'
         ];
 
-        // TODO: insert `filename` into names
+        const getTabIndex = letter => {
+            let index = names.findIndex(n => (typeof(n) !== "string") && (n.tab === letter));
+            return index;
+        };
+
+        const tabIndex = getTabIndex(filename[0].toUpperCase());
+
+        if (tabIndex !== undefined) {
+            let index = tabIndex + 1;
+
+            // Walk forward in list until index name is greater in alpha order
+            while (index < names.length && typeof(names[index]) !== "string") {
+                if (filename < names[index]) break;
+                index += 1;
+            }
+
+            names.splice(index, 0, filename);
+        }
 
         return names;
     }

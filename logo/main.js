@@ -26,7 +26,7 @@ function logo() {
 
         await start();
 
-        return null; // back to global main
+        screen.style.display = 'none';
     }
 
     return {

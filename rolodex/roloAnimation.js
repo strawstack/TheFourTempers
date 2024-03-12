@@ -1,4 +1,4 @@
-function roloAnimation(names, resolveFilename) {
+function roloAnimation(names, filename, resolveFilename) {
 
     const state = {};
     const animations = {};
@@ -22,7 +22,7 @@ function roloAnimation(names, resolveFilename) {
         }
         
         render();
-        window.requestAnimationFrame(calculate);
+        if (state.continue) window.requestAnimationFrame(calculate);
     }
 
     function render() {
@@ -31,11 +31,13 @@ function roloAnimation(names, resolveFilename) {
 
     async function start() {
         
+        state.continue = true;
+
         state.roloScreen = document.querySelector(".rolodex-screen");
         state.roloScreen.style.removeProperty("display");
 
-        state.targetIndex = names.indexOf('Siena');
-        const preSize = 27; 
+        state.targetIndex = names.indexOf(filename);
+        const preSize = 27;
         state.startIndex = Math.max(0, state.targetIndex - preSize);
 
         state.flipSpeedPerCard = 400;
@@ -69,6 +71,8 @@ function roloAnimation(names, resolveFilename) {
         state.tabContainerHeight = parseInt(getCssVar("--rolo-tab-container-height"));
 
         state.roloContainerRef = document.querySelector(".rolodex-container");
+
+        state.topCardRef = document.querySelector(".top-card");
 
         state.copyTopCardRef = document.querySelector(".copy-top-card");
         state.copyBotCardRef = document.querySelector(".copy-bot-card");
@@ -171,11 +175,6 @@ function roloAnimation(names, resolveFilename) {
             from: state.flipStartPercent,
             to: state.flipEndPercent,
             action: n => {
-                /*
-                const convert = 1 / (state.flipEndPercent - state.flipStartPercent);
-                const easeN = easeOutExpo(
-                    (n - state.flipStartPercent) * convert
-                ) / convert + state.flipStartPercent; */
                 flip(n);
             },
             duration: state.flipDuration
@@ -183,10 +182,12 @@ function roloAnimation(names, resolveFilename) {
 
         turnContinue = false;
 
-        // TODO: replace with click event on filename
-        resolveFilename();
-        state.roloScreen.style.display = 'none';
-
+        state.copyTopCardRef.classList.add("ready");
+        state.copyTopCardRef.addEventListener("click", e => {
+            state.continue = false;
+            state.roloScreen.style.display = 'none';
+            resolveFilename();
+        });
     }
 
     function setPillsWithOffset(pills, slice, offset) {
@@ -388,11 +389,3 @@ function roloAnimation(names, resolveFilename) {
         start
     };
 }
-
-// _ _ A B
-// C D E F
-// G H I J
-// K L M N 
-// O P Q R
-// S T U V
-// W X Y Z

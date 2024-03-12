@@ -2,5 +2,5 @@ canvas.lumonal-screen {
     width: var(--screen-width);
     height: var(--screen-height);
     background: var(--background);
-    /* cursor: none; */
+    cursor: none;
 }

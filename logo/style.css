@@ -1,6 +1,8 @@
 .logo-screen {
-    position: relative;
-    top: calc(-1 * var(--screen-height) / 2);
+    position: absolute;
+    width: var(--screen-width);
+    height: var(--screen-height);
+    cursor: none;
 }
 
     .logo-screen>.logocanvas {

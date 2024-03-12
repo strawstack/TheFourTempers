@@ -99,6 +99,8 @@ function logoAnimation({ ctx, size }) {
     state.maskRef = document.querySelectorAll(".mask");
     state.dropRef = document.querySelector(".drop");
 
+    state.continue = true;
+
     function calculate(timestamp) {
         
         for (let key in animations) {
@@ -118,7 +120,7 @@ function logoAnimation({ ctx, size }) {
         }
         
         render();
-        window.requestAnimationFrame(calculate);
+        if (state.continue) window.requestAnimationFrame(calculate);
     }
 
     function render() {
@@ -246,7 +248,7 @@ function logoAnimation({ ctx, size }) {
 
         await wait(waitAfterLogoFade);
 
-        await animation('fadeAllExceptDrop', {
+        await animation('fadeDrop', {
             from: 1,
             to: 0,
             duration: dropFade,
@@ -254,6 +256,8 @@ function logoAnimation({ ctx, size }) {
                 state.dropRef.style.opacity = n;
             }
         });
+
+        state.continue = false;
     }
 
     function renderRect(data) {

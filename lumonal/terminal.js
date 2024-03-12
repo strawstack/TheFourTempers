@@ -409,7 +409,8 @@ function terminal({ canvas: canvasElement, ctx, ta: textarea, macrodataModeInit,
             if (cmd_index > 0) cmd[0] = cmd[cmd_index]; // log command from prev memory
 
             if (macrodataMode) {
-                resolve(strCmd);
+                const filename = strCmd[0].toUpperCase() + strCmd.slice(1).toLowerCase();
+                resolve(filename);
                 return;
             }
 
