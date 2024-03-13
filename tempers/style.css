@@ -27,7 +27,9 @@
             flex-grow: 1;
             align-items: center;
             padding: 2px;
-            border: 3px solid var(--font);
+            border-top: 3px solid var(--font);
+            border-bottom: 3px solid var(--font);
+            border-left: 3px solid var(--font);
             height: 35px;
         }
 
@@ -59,7 +61,7 @@
 
             .macrodata-screen .top .rect .complete {
                 position: absolute;
-                right: calc(70px + 156px + 12px); /* 70 for rigth margin, 156 for bin width, 12 for padding */
+                right: 163px; /* calculated in figma as just to the left of the lumon logo */
                 z-index: 10;
                 -webkit-text-stroke-width: 1px;
                 -webkit-text-stroke-color: var(--background);
@@ -184,10 +186,28 @@
                 align-items: center;
             }
 
-canvas {
+.mdcanvas {
     position: absolute;
     width: 332px;
     height: 92px;
+    pointer-events: none;
+}
+
+.mdlogocanvas {
+    position: absolute;
+    z-index: 5;
+    width: 200px;
+    height: 115px;
+    top: 0px;
+    right: 38px;
+    pointer-events: none;
+}
+
+.mdlogocanvas-svg {
+    position: absolute;
+    z-index: 10;
+    top: 48px;
+    right: 66px;
     pointer-events: none;
 }
 

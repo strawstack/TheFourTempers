@@ -348,6 +348,62 @@ function helper(state, animate, animations) {
         }
     }
 
+    function renderOval(ctx, data) {
+        const LINE_WIDTH = 3;
+        const FONT_COLOR = "#8DF4FF";
+        ctx.save();
+        ctx.scale(data.scale.x, data.scale.y);
+        ctx.beginPath();
+        ctx.arc(
+            data.pos.x / data.scale.x, 
+            data.pos.y / data.scale.y, 
+            data.rad, 
+            0, Math.PI * 2
+        );
+        ctx.restore();
+        ctx.lineWidth = LINE_WIDTH;
+        ctx.strokeStyle = FONT_COLOR;
+        ctx.stroke();
+    }
+
+    function drawLumonLogo() {
+
+        const size = { HEIGHT: 115, WIDTH: 200 };
+        const canvas = document.querySelector(".mdlogocanvas");
+        const scale = window.devicePixelRatio;
+        canvas.width = Math.floor(scale * size.WIDTH);
+        canvas.height = Math.floor(scale * size.HEIGHT);
+        const ctx = canvas.getContext("2d");
+        ctx.scale(scale, scale);
+
+        const outerArc = {
+            scale: { x: 2, y: 1 },
+            pos: { x: size.WIDTH / 2, y: size.HEIGHT / 2 },
+            rad: 40
+        };
+
+        const midArc = {
+            scale: { x: 1.5, y: 1 },
+            pos: { x: size.WIDTH / 2, y: size.HEIGHT / 2 },
+            rad: 40
+        };
+    
+        const inArc = {
+            scale: { x: 0.8, y: 1 },
+            pos: { x: size.WIDTH / 2, y: size.HEIGHT / 2 },
+            rad: 40
+        };
+
+        renderOval(ctx, outerArc);
+        renderOval(ctx, midArc);
+        renderOval(ctx, inArc);
+
+        ctx.fillStyle = "#024179";
+        const thick = 30;
+        ctx.fillRect(30, size.HEIGHT/2 - thick/2, size.WIDTH - 60, thick);
+
+    }
+
     return {
         numberToCoord,
         coordToNumber,
@@ -364,6 +420,7 @@ function helper(state, animate, animations) {
         specialAnimationChain,
         assignBins,
         initStats,
-        padLeft
+        padLeft,
+        drawLumonLogo
     };
 }

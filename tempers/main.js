@@ -85,7 +85,7 @@ function tempers() {
     const { 
         calcMagnification, selectDigit, animationChain, 
         specialAnimationChain, assignBins, initStats, randBetween, 
-        wait, padLeft 
+        wait, padLeft, drawLumonLogo
     } = help;
 
     const { toggleBin } = binToggle(state, animate, animations);
@@ -319,6 +319,8 @@ function tempers() {
             calcMagnification({ clientX, clientY });
             if (state.mouseDown) selectDigit(state.mouse);
         });
+
+        drawLumonLogo();
 
         window.requestAnimationFrame(calculate);
 
