@@ -30,6 +30,7 @@ function calculateFrame(state, animate, animations) {
         a: 'LEFT'
     };
 
+    state.prevFontSize = null;
     function setZoom({ cellSize, fontSize }, COLS) {
 
         // digit font size
@@ -40,6 +41,15 @@ function calculateFrame(state, animate, animations) {
 
         // Cell size
         document.body.style.setProperty("--digit-cell-size", `${cellSize}px`);
+
+        if (state.prevFontSize !== fontSize) {
+            const { width: spanWidth, height: spanHeight } = state.allSpans[0].getBoundingClientRect();
+            state.spanSize = {
+                width: spanWidth, 
+                height: spanHeight
+            };
+        }
+
     }
 
     function valueFromRange(range, percent, base) {
@@ -51,13 +61,19 @@ function calculateFrame(state, animate, animations) {
 
     function setFontSize(adjDigits) {
 
+        state.adjDigitLookup = {};
+
         // Apply font size to adjecent cells
         if (adjDigits != null) {
             adjDigits.forEach(digit => {
                 if (digit === null) return;
 
+                const { key } = digit.dataset;
+
                 // Digit's key to coord in digit container
-                const { x, y } = numberToCoord(digit.dataset.key);
+                const { x, y } = numberToCoord(key);
+
+                state.adjDigitLookup[key] = true;
 
                 // Current cell size
                 const { cellSize: SIZE, fontSize: base, range } = state.zoom_lookup[state.zoomLevel];
@@ -158,16 +174,25 @@ function calculateFrame(state, animate, animations) {
 
             const { x: leftPercent, y: topPercent } = state.digitOffset[key];
 
-            const { height, width } = span.getBoundingClientRect();
-            
-            const vSpace = (cellSize - height) / 2;
-            const hSpace = (cellSize - width) / 2;
+            if (state.spanSize !== null) {
+                let { height, width } = state.spanSize;
 
-            const leftDelta = hSpace * leftPercent;
-            const topDelta = vSpace * topPercent;
+                if (key in state.adjDigitLookup) { // Only call expensive function for adjDigits
+                    let bound = span.getBoundingClientRect();
+                    height = bound.height;
+                    width = bound.width;
+                }
             
-            span.style.left = `${leftDelta}px`;
-            span.style.top = `${topDelta}px`;
+                const vSpace = (cellSize - height) / 2;
+                const hSpace = (cellSize - width) / 2;
+    
+                const leftDelta = hSpace * leftPercent;
+                const topDelta = vSpace * topPercent;
+                
+                span.style.left = `${leftDelta}px`;
+                span.style.top = `${topDelta}px`;
+            }
+
         });
 
         // Adjust UI to reflect stats

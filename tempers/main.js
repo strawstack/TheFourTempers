@@ -58,6 +58,7 @@ function tempers() {
     state.stats = null; // lazy load in main, pulls from local storage
     state.locationPrefix = { x: null, y: null };
     state.bars = null;
+    state.spanSize = null;
 
     // Refs
     state.screen = document.querySelector(".macrodata-screen");
