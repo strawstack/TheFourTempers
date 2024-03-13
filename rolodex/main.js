@@ -28,7 +28,7 @@ function rolodex(filename) {
             {tab: 'O'}, 'Ocula', 
             {tab: 'P'}, 'Pacolma',
             {tab: 'Q'}, 'Qaqortoq', 'Quinhamel',
-            {tab: 'R'}, 'Richard', 'Rosscarbery',
+            {tab: 'R'}, 'Richardsville', 'Rosscarbery',
             {tab: 'S'}, 'Sedona', 'Siena', 'Stellenbosch', 
             {tab: 'T'}, 'Tumwater',
             {tab: 'U'}, 'Ushuaia',
