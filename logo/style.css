@@ -2,7 +2,6 @@
     position: absolute;
     width: var(--screen-width);
     height: var(--screen-height);
-    cursor: url('../img/cursor.png'), pointer;
 }
 
     .logo-screen>.logocanvas {

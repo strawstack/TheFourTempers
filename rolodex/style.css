@@ -8,8 +8,6 @@
     justify-content: center;
     align-items: center;
 
-    cursor: url('../img/cursor.png'), pointer;
-
     .rolodex-container {
         position: relative;
         width: var(--rolo-width);

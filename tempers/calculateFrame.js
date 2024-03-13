@@ -172,6 +172,12 @@ function calculateFrame(state, animate, animations) {
 
             const span = state.allSpans[key];
 
+            if (state.selected !== null && key in state.selected) {
+                span.style.left = `0px`;
+                span.style.right = `0px`;
+                return;
+            }
+
             const { x: leftPercent, y: topPercent } = state.digitOffset[key];
 
             if (state.spanSize !== null) {
