@@ -5,8 +5,8 @@
 - [ ] Have numbers flash (any flourecent color) if they are special, are about to move, and above a certian size.
     - This will increase the value of making numbers large when they are suspicious
 - [ ] Toggle number coloring with key command
-- [ ] Make zoom animated and follow mouse cursor
 - [ ] 100% Completion congragulations screen
+- [ ] Make zoom animated and follow mouse cursor
 
 - [x] Add lumon logo top right of tempers app
 - [x] Rollodex insert custom filename

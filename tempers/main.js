@@ -59,6 +59,8 @@ function tempers() {
     state.locationPrefix = { x: null, y: null };
     state.bars = null;
     state.spanSize = null;
+    state.prevAdj = null;
+    state.prevSelected = null;
 
     // Refs
     state.screen = document.querySelector(".macrodata-screen");

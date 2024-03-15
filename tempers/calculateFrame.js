@@ -119,9 +119,33 @@ function calculateFrame(state, animate, animations) {
             state.zoom_lookup[state.zoomLevel],
             state.COLS
         );
+        
+        // Remove inline font-size for 'selected'
+        if (state.prevSelected !== null) {
+            for (let key in state.prevSelected) {
+                state.allDigits[key].style.removeProperty("font-size");
+            }
+        }
 
-        // Reset inline zoom for all digits
-        state.allDigits.forEach(e => e.style.removeProperty("font-size"));
+        state.prevSelected = {};
+        for (let key in state.selected) {
+            state.prevSelected[key] = state.selected[key];
+        }
+        
+        // Remove inline font-size for 'previously adjecent digits'
+        if (state.prevAdj !== null) {
+            for (let key in state.prevAdj) {
+                state.allDigits[key].style.removeProperty("font-size");
+            }
+        }
+
+        if (state.magnification.adjDigits !== null) {
+            state.prevAdj = {};
+            for (let digit of state.magnification.adjDigits.filter(d => d !== null)) {
+                const { key } = digit.dataset;
+                state.prevAdj[key] = digit;
+            }
+        }
 
         // Magnification
         setFontSize(state.magnification.adjDigits);
