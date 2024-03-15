@@ -2,13 +2,15 @@
 
 # Todo
 
-- [ ] Split numbers into five groups of animated digits. Switch between these arrays every 10s
 - [ ] Have numbers flash (any flourecent color) if they are special, are about to move, and above a certian size.
     - This will increase the value of making numbers large when they are suspicious
 - [ ] Toggle number coloring with key command
+- [ ] Make main digits easier to see
+- [ ] Set more engaging animation timings
 - [ ] 100% Completion congragulations screen
 - [ ] Make zoom animated and follow mouse cursor
 
+- [x] Split numbers into five groups of animated digits. Switch between these arrays every 10s
 - [x] Add lumon logo top right of tempers app
 - [x] Rollodex insert custom filename
     - [x] Pause rollodex animation on target file and offer click
