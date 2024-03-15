@@ -118,16 +118,20 @@ function helper(state, animate, animations) {
             const { digits } = state.mainDigits[key];
             digits.forEach(({ref}) => {
 
-                const { key } = ref.dataset;
+                const { key: dkey } = ref.dataset;
+
+                // Don't cancel main digit
+                if (key === dkey) return;
                 
                 // Cancel animation and promise
-                delete animations[`base_${key}`];
-                if (`base_${key}` in state.controllers) {
-                    state.controllers[`base_${key}`].abort();
-                    delete state.controllers[`base_${key}`];
+                delete animations[`base_${dkey}`];
+                if (`base_${dkey}` in state.controllers) {
+                    state.controllers[`base_${dkey}`].abort();
+                    delete state.controllers[`base_${dkey}`];
                 };
 
-                specialAnimationChain(key);
+                state.isSpecial[dkey] = true;
+                specialAnimationChain(dkey);
             });
         }
     }
@@ -137,7 +141,6 @@ function helper(state, animate, animations) {
     }
 
     async function animationChain(key) {
-
         let signal = null;
         if (!(`base_${key}` in state.controllers)) {
             const controller = new AbortController();

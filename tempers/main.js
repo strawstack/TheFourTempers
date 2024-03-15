@@ -48,6 +48,7 @@ function tempers() {
     ];
     state.controllers = {};
     state.binToGroupKey = {};
+    state.isSpecial = {};
     state.FILENAME = null;
     state.getRandom = null;
     state.groups = null;
@@ -210,12 +211,45 @@ function tempers() {
             const { key } = d.dataset;
             if (key in state.mainDigits) {
                 specialAnimationChain(key);
-
-            } else {
-                animationChain(key);
-
             }
         });
+
+        state.digitGroups = [[], [], [], [], []];
+        for (let digit of state.allDigits) {
+            const { key } = digit.dataset;
+            if (!(key in state.mainDigits)) {
+                const index = randBetween(0, state.digitGroups.length);
+                state.digitGroups[index].push(digit);
+            }
+        }
+
+        const groupAnimationChain = async () => {
+            const index = randBetween(0, state.digitGroups.length);
+            
+            state.digitGroups[index].forEach(d => {
+                const { key } = d.dataset;
+                if (!(key in state.isSpecial)) animationChain(key);
+            });
+
+            await wait(10000);
+
+            // Cancel all non-special animation chains in progress
+            state.digitGroups[index].forEach(d => {
+                const { key } = d.dataset;
+                if (!(key in state.isSpecial)) {
+                    // Cancel animation and promise
+                    delete animations[`base_${key}`];
+                    if (`base_${key}` in state.controllers) {
+                        state.controllers[`base_${key}`].abort();
+                        delete state.controllers[`base_${key}`];
+                    };
+                };
+            });
+
+            groupAnimationChain();
+        };
+
+        groupAnimationChain();
 
         window.addEventListener("keydown", e => {
             const {key} = e;
@@ -306,7 +340,11 @@ function tempers() {
                             delete state.controllers[`base_${dkey}`];
                         };
 
-                        animationChain(dkey);
+                        // Note: Non-main digits in group remain idle until
+                        // the next animation picks them up
+                        // Either selection based or part of a 
+                        // group animation
+                        state.isSpecial = {};
                     }
                 }
             }

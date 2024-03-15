@@ -33,16 +33,17 @@ function calculateFrame(state, animate, animations) {
     state.prevFontSize = null;
     function setZoom({ cellSize, fontSize }, COLS) {
 
-        // digit font size
-        document.body.style.setProperty("--digit-font-size", `${fontSize}rem`);
-
-        // 64 in a row
-        document.body.style.setProperty("--digit-container-size", `${COLS * cellSize}px`);
-
-        // Cell size
-        document.body.style.setProperty("--digit-cell-size", `${cellSize}px`);
-
         if (state.prevFontSize !== fontSize) {
+
+            // digit font size
+            document.body.style.setProperty("--digit-font-size", `${fontSize}rem`);
+
+            // 64 in a row
+            document.body.style.setProperty("--digit-container-size", `${COLS * cellSize}px`);
+
+            // Cell size
+            document.body.style.setProperty("--digit-cell-size", `${cellSize}px`);
+
             const { width: spanWidth, height: spanHeight } = state.allSpans[0].getBoundingClientRect();
             state.spanSize = {
                 width: spanWidth, 
@@ -192,6 +193,7 @@ function calculateFrame(state, animate, animations) {
         // Apply digit offsets
         const { cellSize } = state.zoom_lookup[state.zoomLevel];
         state.allDigits.forEach(d => {
+
             const { key } = d.dataset;
 
             const span = state.allSpans[key];
@@ -222,7 +224,6 @@ function calculateFrame(state, animate, animations) {
                 span.style.left = `${leftDelta}px`;
                 span.style.top = `${topDelta}px`;
             }
-
         });
 
         // Adjust UI to reflect stats
