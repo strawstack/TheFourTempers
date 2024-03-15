@@ -2,6 +2,7 @@
 
 # Todo
 
+- [ ] Split numbers into five groups of animated digits. Switch between these arrays every 10s
 - [ ] Have numbers flash (any flourecent color) if they are special, are about to move, and above a certian size.
     - This will increase the value of making numbers large when they are suspicious
 - [ ] Toggle number coloring with key command
