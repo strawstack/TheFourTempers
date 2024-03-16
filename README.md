@@ -1,6 +1,6 @@
 # TheFourTempers
 
-Master the four tempers as did Keir, and "the world shall become but your appendage."
+Master the four tempers as did Kier, and "the world shall become but your appendage."
 
 # Demo
 
