@@ -33,6 +33,8 @@ function lumonal() {
                 }
             };
 
+            await wait(200);
+
             await writeText();
 
             await wait(250);
