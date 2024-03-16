@@ -4,6 +4,8 @@ Master the four tempers as did Keir, and "the world shall become but your append
 
 [Live Demo](https://strawstack.github.io/TheFourTempers/)
 
+[![](./screenshots/five.png)](https://strawstack.github.io/TheFourTempers/)
+
 # Controls
 
 Mouse move: Magnify numbers in the grid.
