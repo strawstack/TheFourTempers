@@ -10,7 +10,8 @@ function animation() {
         return new Promise((resolve, rej) => {
 
             if (signal !== undefined && signal.aborted) {
-                return Promise.reject(new DOMException('Aborted', 'AbortError'));
+                // return Promise.reject(new DOMException('Aborted', 'AbortError'));
+                resolve();
             }
 
             animations[key] = {

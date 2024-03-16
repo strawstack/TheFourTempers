@@ -23,6 +23,7 @@ function tempers() {
     state.digitContainerPosition = {x: 0, y: 0};
     state.currentVelocity = {x: 0, y: 0};
     state.isKeyDown = { w: false, a: false, s: false, d: false, 1: false, 2: false, 3: false, 4: false, 5: false };
+    state.isKeirDown = false; // Kier Eagan
     state.zoom_lookup = [
         { cellSize: 40, fontSize: 0.75, range: [0.75, 3]},
         { cellSize: 55, fontSize: 1, range: [1, 4.25]},
@@ -92,7 +93,7 @@ function tempers() {
     } = help;
 
     const { toggleBin } = binToggle(state, animate, animations);
-    const { sendBin } = sendBinAnimation(state, help, animate, toggleBin);
+    const { sendBin } = sendBinAnimation(state, help, animate, animations, toggleBin);
     const { calcBehaviour } = behaviour(state, help, animate);
 
     // Helper
@@ -292,6 +293,8 @@ function tempers() {
                 if (activeBin === undefined) return;
                 sendBin(parseInt(activeBin, 10));
 
+            } else if (key === "k") {
+                state.isKeirDown = true;
             }
         });
 
@@ -311,6 +314,8 @@ function tempers() {
                         toggleBin(parseInt(key, 10), false);
                     }
                 }
+            } else if (key === "k") {
+                state.isKeirDown = false;
             }
         });
 

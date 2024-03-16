@@ -111,6 +111,9 @@ function helper(state, animate, animations) {
     function selectDigit(mouse) {
         const key = keyFromMouse( mouseRelativeToDigitContainer(mouse) );
         if (state.selected === null) state.selected = {};
+        
+        // Don't select twice
+        if (key in state.selected) return;
         state.selected[key] = true;
 
         // One main digit is selected, switch animation style of others in group
@@ -152,10 +155,10 @@ function helper(state, animate, animations) {
 
         }
 
-        // 50% chance to wait in place
-        if (state.getRandom() < 0.5) {
+        // 10% chance to wait in place
+        if (state.getRandom() < 0.1) {
             try {
-                await wait( randBetween(5000, 8000), signal );
+                await wait( randBetween(2000, 3000), signal );
             } catch(e) { return; }
             
         }
@@ -167,11 +170,11 @@ function helper(state, animate, animations) {
             y: state.getRandom() * 2 - 1
         };
 
-        // 50% chance to return to center
-        if (state.getRandom() < 0.5) newPos = {x: 0, y: 0};
+        // 40% chance to return to center
+        if (state.getRandom() < 0.4) newPos = {x: 0, y: 0};
 
         const delta = sub(newPos, oldPos);
-        const duration = randBetween(3000, 7000);
+        const duration = randBetween(2000, 4000);
         try {
             await animate(`base_${key}`, {
                 from: oldPos, 
@@ -210,9 +213,22 @@ function helper(state, animate, animations) {
         // Chance to wait in place
         if (state.getRandom() < 0.7) {
             try {
-                await wait( randBetween(10000, 12000), signal );
+                await wait( randBetween(7000, 8000), signal );
             } catch(e) { return; }
         }
+
+        const flash = async () => {
+            const saveColor = state.allDigits[key].style.color;
+            const times = 2;
+            const onTime = 200;
+            const offTime = 200;
+            for (let i = 0; i < times; i++) {
+                state.allSpans[key].style.color = 'white';
+                await wait(onTime);
+                state.allSpans[key].style.color = saveColor;
+                await wait(offTime);
+            }
+        };
 
         const move = async () => {
 
@@ -224,11 +240,16 @@ function helper(state, animate, animations) {
                 y: (state.getRandom() < 0.5) ? -1 : 1
             };
     
+            // Flip to ensure not same position twice
+            if (oldPos.x === newPos.x && oldPos.y === newPos.y) {
+                newPos.x *= -1;
+            }
+
             // Chance to return to center
-            if (state.getRandom() < 0.2) newPos = {x: 0, y: 0};
+            if (state.getRandom() < 0.15) newPos = {x: 0, y: 0};
     
             const delta = sub(newPos, oldPos);
-            const duration = randBetween(1000, 1500); // Move relatively faster
+            const duration = randBetween(500, 1000); // Move relatively faster
     
             await animate(`base_${key}`, {
                 from: oldPos, 
@@ -247,11 +268,16 @@ function helper(state, animate, animations) {
             }, signal);
         };
 
-        // Move twice quickly
+        // Flash once, move quickly multiple times
         try {
+            if (state.selected === null || !(key in state.selected)) await flash();
             await move();
             await move();
-        } catch(e) { return; }
+            await move();
+        } catch(e) {
+            console.log(e); 
+            return; 
+        }
 
         // Continue chain
         specialAnimationChain(key);

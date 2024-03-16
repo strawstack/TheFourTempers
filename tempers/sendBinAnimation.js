@@ -1,4 +1,4 @@
-function sendBinAnimation(state, { sub, mag, calcMagnification, wait }, animate, toggleBin) {
+function sendBinAnimation(state, { sub, mag, calcMagnification, wait }, animate, animations, toggleBin) {
 
     async function sendBin(activeBin) {
 
@@ -126,9 +126,24 @@ function sendBinAnimation(state, { sub, mag, calcMagnification, wait }, animate,
                     state.stats[state.FILENAME]["bins"][activeBinNumber].cur[value] += 1;
                 });
             }
+
+            // Switch non-special digits back to normal animation pattern
+            const { digits } = state.mainDigits[mainDigit];
+            for (let { ref } of digits) {
+                const dkey = ref.dataset.key;
+                
+                // Cancel animation and promise
+                delete animations[`base_${dkey}`];
+                if (`base_${dkey}` in state.controllers) {
+                    state.controllers[`base_${dkey}`].abort();
+                    delete state.controllers[`base_${dkey}`];
+                };
+
+                state.isSpecial = {};
+            }
             
         } else {
-            console.log("no!");
+            console.log("no...");
 
         }
     

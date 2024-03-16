@@ -3,7 +3,7 @@
     async function main() {
         
         const params = new URLSearchParams(window.location.search);
-        let filename = params.get('filename');
+        let filename = params.get('fn');
         
         if (filename === null) {
             const { start: startLumonal, boot: bootLumonal } = lumonal();

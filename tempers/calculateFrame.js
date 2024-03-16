@@ -16,6 +16,8 @@ function calculateFrame(state, animate, animations) {
     const MID_HEIGHT = 500;
     const SCREEN_WIDTH = 1000;
 
+    const ORIG_FONT = "#8DF4FF";
+
     const dir = {
         UP: {x: 0, y: -1},
         RIGHT: {x: 1, y: 0},
@@ -182,12 +184,21 @@ function calculateFrame(state, animate, animations) {
 
         // DEBUG: Make groups RED for debugging
         if (state.groups !== null) {
-            state.groups.forEach(group => {
-                group.digits.forEach(({ref}) => {
-                    ref.style.color = 'lightsalmon';
+            if (state.isKeirDown) {
+                state.groups.forEach(group => {
+                    group.digits.forEach(({ref}) => {
+                        ref.style.color = 'lightsalmon';
+                    });
+                    group.digits[group.main].ref.style.color = 'gold';
                 });
-                group.digits[group.main].ref.style.color = 'gold';
-            });
+            } else {
+                state.groups.forEach(group => {
+                    group.digits.forEach(({ref}) => {
+                        ref.style.color = ORIG_FONT;
+                    });
+                    group.digits[group.main].ref.style.color = ORIG_FONT;
+                });
+            }
         }
 
         // Apply digit offsets
