@@ -35,3 +35,5 @@ B (with active selection and open bin): Send selection to open bin.
 ![](./screenshots/four.png)
 
 ![](./screenshots/five.png)
+
+![](./screenshots/six.png)
