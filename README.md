@@ -4,7 +4,7 @@ Master the four tempers as did Keir, and "the world shall become but your append
 
 # Demo
 
-[Live Demo](https://strawstack.github.io/TheFourTempers/)
+[Demo](https://strawstack.github.io/TheFourTempers/)
 
 # Video
 
