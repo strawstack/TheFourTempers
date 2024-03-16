@@ -2,7 +2,11 @@
 
 Master the four tempers as did Keir, and "the world shall become but your appendage."
 
+# Live Demo
+
 [Live Demo](https://strawstack.github.io/TheFourTempers/)
+
+# Video
 
 [Video](https://youtu.be/C3lXoiiYxRY)
 
